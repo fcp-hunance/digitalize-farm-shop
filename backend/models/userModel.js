@@ -1,24 +1,24 @@
 const db = require('../db');
 
-async function findByUsername(username) {
-  const rows = await db.query('SELECT * FROM benutzer WHERE username = ?', [username]);
+async function findByUsername(name) {
+  const rows = await db.query('SELECT * FROM cashiers WHERE name = ?', [name]);
   return rows[0]; // erste Zeile zurückgeben
 }
 
 
 
-async function createUser(username, hashedPassword) {
+async function createUser(name, hashedPassword) {
   const result = await db.query(
-    'INSERT INTO benutzer (username, passwort) VALUES (?, ?)',
-    [username, hashedPassword]
+    'INSERT INTO cashiers (name, passwort) VALUES (?, ?)',
+    [name, hashedPassword]
   );
   return result;
 }
 
-async function getUserByUsername(username) {
+async function getUserByUsername(name) {
   const rows = await db.query(
-    'SELECT * FROM benutzer WHERE username = ?',
-    [username]
+    'SELECT * FROM cashiers WHERE name = ?',
+    [name]
   );
   return rows[0];
 }

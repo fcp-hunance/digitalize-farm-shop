@@ -51,7 +51,7 @@ POST http://localhost:3000/auth/register
 }
 ```
 The password will be hashed and stored in the database along with a unique ID and the username.
-The user data is saved in a table called benutzer. (This table name can be changed later if needed.)
+The user data is saved in a table called cashiers. (This table name can be changed later if needed.)
 
 
 
