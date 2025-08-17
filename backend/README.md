@@ -1,56 +1,114 @@
-# Backend - Digitalize Farm Shop
+# Kassensystem Backend
 
-This folder contains the Express.js backend API server for the Digitalize Farm Shop.
+This project represents the backend of a web-based cashier system.  
+My part of the project includes the backend logic for:
+
+- The cashier system
+- The stock system
+- The admin dashboard
+
+It is developed using **Node.js**, **Express**, and **MariaDB**.
+
+## 🔧 Technologies Used
+
+The following technologies are used:
+
+- Node.js
+- Express
+- MariaDB
+- dotenv
+- bcrypt (for hashing passwords)
+
+## 📁 Project Structure
+
+kassensystem-backend/
+├── controllers/ # Controller logic for routes
+├── models/ # Database queries
+├── routes/ # Express routes
+├── tools/ # Utility functions (e.g., hashing)
+├── db.js # MariaDB database connection
+├── index.js # Main server file
+├── .env # Environment variables
+└── README.md # Project documentation
 
 
-## Requirements
+---
 
-- Node.js (v16+ recommended)
-- npm or yarn
-- Access to MariaDB server (credentials configured via `.env`)
+## 1. Create a User
+
+First, the admin needs to create a user using the dashboard.  
+This can be done via the following route:
+
+POST http://localhost:3000/auth/register
 
 
-## Backend Setup
+**Request body example:**
 
-1. Go to the backend folder:
-```bash
-cd backend
+```json
+{
+  "username": "marten",
+  "password": "meinPasswort123"
+}
 ```
-2. Install dependencies:
-```bash
-npm install
-```
-3. Configure environment variables:   
-Copy .env.example to .env and edit values for DB connection, port, etc.
-```bash
-cp .env.example .env
-```
-4. Run migrations (if applicable):   
-```bash
-mysql -u user -p digitalize_farm_shop < db/schema.sql
-mysql -u user -p digitalize_farm_shop < db/migrations/20250721_add_column.sql
+The password will be hashed and stored in the database along with a unique ID and the username.
+The user data is saved in a table called benutzer. (This table name can be changed later if needed.)
+
+
+
+## 2. Login
+Once a user has been created, they can log in using:
+
+POST http://localhost:3000/auth/login
+
+
+Request Body: 
+```json
+{
+  "username": "marten",
+  "password": "meinPasswort123"
+}
 ```
 
-## Running the server
+If the credentials are correct, the server will respond with:
+```json
+{
+  "message": "Erfolgreich angemeldet",
+  "user": {
+    "id": 1,
+    "username": "marten"
+  }
+}
 
-Development mode (with hot reload via nodemon):
-```bash
-npm run dev
 ```
-Production mode:
+
+
+## 3. Calculate Total Price from Products
+This route calculates the total price of selected products from the database:
+
+
+
+POST http://localhost:3000/kasse/berechne
+
+
+Request body example:
+```json
+{
+  "positionen": [
+    { "id": 1, "menge": 2 },
+    { "id": 2, "menge": 1 }
+  ]
+}
 ```
-npm start
+
+If all products exist, the server responds with:
+```json
+{
+  "gesamtbetrag": 7.2
+}
 ```
-## API Overview (Example)
 
-    /api/cashdesk - Manage sales, items, tickets
 
-    /api/warehouse - Inventory management, invoices
+The gesamtbetrag will vary depending on the product prices stored in the database.
 
-    /api/dashboard - Reporting and analytics
 
-    (Expand with detailed endpoints as you implement)
-## Testing
-    Add testing instructions here (if tests are implemented).
-## License   
-MIT License
+
