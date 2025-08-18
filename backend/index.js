@@ -4,9 +4,9 @@ const app = express();
 
 require('dotenv').config();
 
-const kasseRoute = require('backend/src/routes/kasse.js');
-const lagerRoute = require('backend/src/routes/lager.js');
-const authRoute = require('backend/src/routes/auth.js');
+const kasseRoute = require('backend/routes/kasse.js');
+const lagerRoute = require('backend/routes/lager.js');
+const authRoute = require('backend/routes/auth.js');
 
 app.use(express.json()); // JSON-Body parsen
 
