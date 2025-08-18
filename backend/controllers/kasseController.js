@@ -1,4 +1,4 @@
-const produktModel = require('../src/models/produktModel');
+const produktModel = require('../models/produktModel');
 
 async function berechneGesamtbetrag(req, res) {
   const positionen = req.body.positionen;
