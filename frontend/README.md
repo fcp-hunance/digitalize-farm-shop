@@ -33,7 +33,7 @@ This folder contains the React.js frontend client for the Digitalize Farm Shop.
     ```
     Serve production build (e.g., with serve package or integrated with backend)
 
-3. Features
+## Features
 
     Cash Desk UI: Enter items, weights/counts, print receipt
 
@@ -41,7 +41,48 @@ This folder contains the React.js frontend client for the Digitalize Farm Shop.
 
     Dashboard UI: Visualize sales, turnover, inventory data, users management
 
-4. Testing   
+## Authentication Context (after a successfully frontend-backend implentation )
+REACT_APP_API_URL=http://localhost:3000/api in .env or .env.development
+```
+import { AuthProvider } from "./context/AuthContext";
+
+<AuthProvider>
+    (here comes the Code for the main page)
+</AuthProvider>
+```
+Login example:
+```
+const login = async (username, password) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/login`,
+        { username, password },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      const { token, user, role } = response.data;
+      localStorage.setItem('token', token);
+      setAuth({ token });
+      setUser(username);
+      setRoleContext(role);
+      startTknExpTimer(token);
+      return response.data;
+    } catch (error) {
+      throw error.response ? error.response.data : new Error('Network error');
+    }
+  };
+```
+Logout Example:
+const logout = (message) => {
+    setModalMessage(message)
+    setAuth(null);
+    setUser("");
+    setRoleContext("");
+    localStorage.removeItem('token');
+    clearTimeout(timeoutRef.current);
+  };
+
+For more info see the AuthContext.js
+## Testing   
 Add testing instructions here (if tests are implemented).
-5. License   
+## License   
 MIT License
