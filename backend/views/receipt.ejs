@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Kassenbon</title>
+  <style>
+    body {
+      font-family: monospace;
+      font-size: 12px;
+      width: 58mm;   /* oder 80mm, je nach Drucker */
+      margin: 0;
+      padding: 4px;
+    }
+    h2, h3 {
+      text-align: center;
+      margin: 4px 0;
+    }
+    .line {
+      border-top: 1px dashed #000;
+      margin: 4px 0;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 2px 0; }
+    td.right { text-align: right; }
+    .totals td { font-weight: bold; }
+    .footer { text-align: center; margin-top: 10px; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <h2><%= data.seller.name %></h2>
+  <div style="text-align:center"><%= data.seller.address %></div>
+  <div style="text-align:center">USt-IdNr.: <%= data.seller.vatId %></div>
+
+  <h3>Kassenbon</h3>
+  <div>Bon-Nr.: <%= data.invoiceNumber %></div>
+  <div>Datum: <%= data.date %></div>
+
+  <div class="line"></div>
+  <table>
+    <% items.forEach(it => { %>
+      <tr>
+        <td><%= it.qty %>x <%= it.name %></td>
+        <td class="right"><%= (it.lineTotal).toFixed(2) %> <%= data.currency %></td>
+      </tr>
+    <% }) %>
+  </table>
+  <div class="line"></div>
+
+  <table class="totals">
+    <tr>
+      <td>Netto</td>
+      <td class="right"><%= totals.net.toFixed(2) %> <%= data.currency %></td>
+    </tr>
+    <tr>
+      <td>MwSt <%= (data.taxRate*100).toFixed(0) %>%</td>
+      <td class="right"><%= totals.tax.toFixed(2) %> <%= data.currency %></td>
+    </tr>
+    <tr>
+      <td>Gesamt</td>
+      <td class="right"><%= totals.gross.toFixed(2) %> <%= data.currency %></td>
+    </tr>
+  </table>
+
+  <div class="line"></div>
+  <div class="footer">
+    <%= data.notes %><br>
+    Vielen Dank für Ihren Einkauf!
+  </div>
+</body>
+</html>

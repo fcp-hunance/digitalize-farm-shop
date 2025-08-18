@@ -18,4 +18,25 @@ async function generateInvoicePDF(invoiceData) {
   return pdfBuffer;
 }
 
-module.exports = { generateInvoicePDF };
+async function generateReceiptPDF(data) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    const html = await ejs.renderFile(
+        path.join(__dirname, "../views/receipt.ejs"),
+        data,
+        { async: true }
+    );
+
+    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    const pdfBuffer = await page.pdf({
+        width: "58mm",   // oder "80mm", je nach Drucker
+        printBackground: true
+    });
+
+    await browser.close();
+    return pdfBuffer;
+}
+
+module.exports = { generateInvoicePDF, generateReceiptPDF };
