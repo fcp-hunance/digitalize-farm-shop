@@ -135,8 +135,9 @@ If all products exist, the server responds with:
   "gesamtbetrag": 7.2
 }
 ```
-
 The gesamtbetrag will vary depending on the product prices stored in the database.
+## Notes
+Should we put all the DB Logic in a File? Maybe could Cantez complete this with all needed SQL Queries.
 ## Testing
     Add testing instructions here (if tests are implemented for exampled with POSTMAN).
 ## License   
