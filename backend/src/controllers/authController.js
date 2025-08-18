@@ -1,6 +1,13 @@
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 
+
+
+// Token erstellen und zurücksenden für Tokenhandling in Front und Backend
+
+
+
+
 async function login(req, res) {
   const { username, password } = req.body;
 
