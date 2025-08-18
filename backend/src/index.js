@@ -1,23 +1,21 @@
-require('dotenv').config();
-
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON
-app.use(express.json());
 
-// Basic health check route
-app.get('/', (req, res) => {
-  res.json({ message: 'Backend is running!' });
-});
+require('dotenv').config();
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
+const kasseRoute = require('backend/src/routes/kasse.js');
+const lagerRoute = require('backend/src/routes/lager.js');
+const authRoute = require('backend/src/routes/auth.js');
 
-// Start server
+app.use(express.json()); // JSON-Body parsen
+
+app.use('/kasse', kasseRoute);
+app.use('/lager', lagerRoute);
+app.use('/auth', authRoute);
+
+
+const PORT = process.env.PORTserver || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Backend server listening on http://localhost:${PORT}`);
+  console.log(`Server läuft auf http://localhost:${PORT}`);
 });
