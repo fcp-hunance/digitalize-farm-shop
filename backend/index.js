@@ -7,12 +7,14 @@ require('dotenv').config();
 const kasseRoute = require('./routes/kasse');
 const lagerRoute = require('./routes/lager');
 const authRoute = require('./routes/auth');
+const invoiceRoutes = require('./routes/invoice');
 
 app.use(express.json()); // JSON-Body parsen
 
-app.use('/kasse', kasseRoute);
-app.use('/lager', lagerRoute);
-app.use('/auth', authRoute);
+app.use('/api/kasse', kasseRoute);
+app.use('/api/lager', lagerRoute);
+app.use('/api/auth', authRoute);
+app.use('/api/invoice', invoiceRoutes);
 
 
 const PORT = process.env.PORTserver || 3000;

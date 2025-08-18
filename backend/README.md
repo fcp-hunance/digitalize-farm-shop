@@ -136,6 +136,19 @@ If all products exist, the server responds with:
 }
 ```
 The gesamtbetrag will vary depending on the product prices stored in the database.
+### Create Invoice //TODO Update with the logic for the DB
+This route create the invoice in PDF, or a preview in HTML:
+POST http://localhost:3000/api/invoice/invoice.pdf or http://localhost:3000/api/invoice/invoice.html
+In body the items list:
+```
+{
+  "items": [
+    { "id": "coffee", "qty": 2 },
+    { "id": "croissant", "qty": 1 },
+    { "id": "milk_oat", "qty": 0.5 }
+  ]
+}
+```
 ## Notes
 Should we put all the DB Logic in a File? Maybe could Cantez complete this with all needed SQL Queries.
 ## Testing
