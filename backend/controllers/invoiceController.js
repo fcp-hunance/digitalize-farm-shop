@@ -1,0 +1,70 @@
+const { calcInvoice } = require("../services/invoiceService");
+const { generateInvoicePDF } = require("../services/pdfService");
+const path = require("path");
+const ejs = require("ejs");
+
+async function createInvoice(req, res) {
+  try {
+    const { items } = req.body;
+    const invoice = calcInvoice(items);
+
+    const invoiceData = {
+      data: {
+        invoiceNumber: "INV-" + Date.now(),
+        date: new Date().toLocaleDateString("de-DE"),
+        seller: { name: "Beispiel GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
+        buyer: { name: "Max Mustermann", address: "Testweg 12, Berlin" },
+        taxRate: 0.19,
+        currency: "€",
+        notes: "Vielen Dank für Ihren Einkauf!"
+      },
+      items: invoice.items,
+      totals: invoice.totals,
+    };
+
+    const pdfBuffer = await generateInvoicePDF(invoiceData);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "inline; filename=invoice.pdf");
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error generating invoice");
+  }
+}
+
+async function previewInvoice(req, res) {
+  try {
+    const { items } = req.body;
+    const invoice = calcInvoice(items);
+
+    const invoiceData = {
+      data: {
+        invoiceNumber: "INV-" + Date.now(),
+        date: new Date().toLocaleDateString("de-DE"),
+        seller: { name: "Beispiel GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
+        buyer: { name: "Max Mustermann", address: "Testweg 12, Berlin" },
+        taxRate: 0.19,
+        currency: "€",
+        notes: "Vielen Dank für Ihren Einkauf!"
+      },
+      items: invoice.items,
+      totals: invoice.totals,
+    };
+
+    // render plain HTML without PDF
+    const html = await ejs.renderFile(
+      path.join(__dirname, "../views/invoice.ejs"),
+      invoiceData,
+      { async: true }
+    );
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error rendering invoice HTML");
+  }
+}
+
+module.exports = { createInvoice, previewInvoice };

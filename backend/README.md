@@ -2,16 +2,13 @@
 
 This folder contains the Express.js backend API server for the Digitalize Farm Shop.
 
-
 ## Requirements
 
 - Node.js (v16+ recommended)
 - npm or yarn
 - Access to MariaDB server (credentials configured via `.env`)
 
-
 ## Backend Setup
-
 1. Go to the backend folder:
 ```bash
 cd backend
@@ -30,9 +27,7 @@ cp .env.example .env
 mysql -u user -p digitalize_farm_shop < db/schema.sql
 mysql -u user -p digitalize_farm_shop < db/migrations/20250721_add_column.sql
 ```
-
 ## Running the server
-
 Development mode (with hot reload via nodemon):
 ```bash
 npm run dev
@@ -41,16 +36,124 @@ Production mode:
 ```
 npm start
 ```
-## API Overview (Example)
+## 📁 Project Structure
+```
+kassensystem-backend/
+├── controllers/ # Controller logic for routes
+├── models/ # Database queries
+├── routes/ # Express routes
+├── tools/ # Utility functions (e.g., hashing)
+├── db.js # MariaDB database connection
+├── index.js # Main server file
+├── .env # Environment variables
+└── README.md # Project documentation
+```
+---
 
-    /api/cashdesk - Manage sales, items, tickets
+## API Overview
+- /api/auth - Mange Users Register, Login and Authentication
+- /api/kasse - Manage sales, items, tickets
+- /api/lager - Inventory management, invoices
+- /api/dashboard - Reporting and analytics, Produts and Users management
+(Expand with detailed endpoints as you implement)
+    
+### 1. Create a User
 
-    /api/warehouse - Inventory management, invoices
+First, the admin needs to create a user using the dashboard.  
+This can be done via the following route:
 
-    /api/dashboard - Reporting and analytics
+POST http://localhost:3000/api/auth/register
 
-    (Expand with detailed endpoints as you implement)
+
+**Request body example:**
+
+```json
+{
+  "username": "marten",
+  "password": "meinPasswort123"
+}
+```
+The password will be hashed and stored in the database along with a unique ID and the username.
+The user data is saved in a table called cashiers. (This table name can be changed later if needed.)
+
+
+### 2. Login
+Once a user has been created, they can log in using:
+
+POST http://localhost:3000/api/auth/login
+
+Request Body: 
+```json
+{
+  "username": "marten",
+  "password": "meinPasswort123"
+}
+```
+
+If the credentials are correct, the server will respond with:
+```json
+{
+  "message": "Erfolgreich angemeldet",
+  "user": {
+    "id": 1,
+    "username": "marten"
+  }
+}
+
+```
+TODO in this response will be also created a Token for authentication.
+// Generate a JWT token for authentication, here a Password is needed (Put JWT_SECRET variable in .env), userRole will be became from DB.
+```
+  const token = jwt.sign(
+      { username, role: userRole },
+      JWT_SECRET,
+      { expiresIn: '10h' }
+  );
+```
+Then will be sended this token to the client.
+```
+res.status(200).json({ message: 'Login successful', token, user: username, role: userRole });
+```
+
+### 3. Calculate Total Price from Products
+This route calculates the total price of selected products from the database:
+
+POST http://localhost:3000/api/kasse/berechnen
+
+Request body example:
+```json
+{
+  "positionen": [
+    { "id": 1, "menge": 2 },
+    { "id": 2, "menge": 1 }
+  ]
+}
+```
+If all products exist, the server responds with:
+```json
+{
+  "gesamtbetrag": 7.2
+}
+```
+The gesamtbetrag will vary depending on the product prices stored in the database.
+### Create Invoice //TODO Update with the logic for the DB
+This route create the invoice in PDF, or a preview in HTML:
+POST http://localhost:3000/api/invoice/invoice.pdf or http://localhost:3000/api/invoice/invoice.html
+In body the items list:
+```
+{
+  "items": [
+    { "id": "coffee", "qty": 2 },
+    { "id": "croissant", "qty": 1 },
+    { "id": "milk_oat", "qty": 0.5 }
+  ]
+}
+```
+## Notes
+Should we put all the DB Logic in a File? Maybe could Cantez complete this with all needed SQL Queries.
 ## Testing
-    Add testing instructions here (if tests are implemented).
+    Add testing instructions here (if tests are implemented for exampled with POSTMAN).
 ## License   
 MIT License
+
+
