@@ -26,7 +26,7 @@ async function login(req, res) {
     }
 
     // Passwortprüfung
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.passwort);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Falsches Passwort' });
     }
@@ -51,7 +51,7 @@ async function login(req, res) {
 };
 
 
-// app.listen(3000, () => console.log('Server läuft auf Port 3000'));
+
 
 async function register(req, res) {
   const { username, password } = req.body;
