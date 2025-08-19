@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>Rechnung <%= data.invoiceNumber %></title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; margin: 40px; }
+    header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+    header img { max-height: 50px; }
+    h1 { font-size: 18px; margin: 0; }
+    .company, .customer { font-size: 12px; }
+    .customer { margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border-bottom: 1px solid #ddd; padding: 6px; }
+    th { background: #f2f2f2; text-align: left; }
+    td.right, th.right { text-align: right; }
+    tfoot td { font-weight: bold; }
+    .totals { margin-top: 20px; width: 50%; float: right; }
+    .notes { margin-top: 40px; font-size: 11px; color: #555; }
+    footer { position: fixed; bottom: 20px; left: 40px; right: 40px; font-size: 10px; border-top: 1px solid #ddd; padding-top: 5px; color: #555; text-align: center; }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="company">
+      <h1><%= data.seller.name %></h1>
+      <div><%= data.seller.address %></div>
+      <div>USt-IdNr.: <%= data.seller.vatId %></div>
+    </div>
+    <div>
+      <% if (data.seller.logo) { %>
+        <img src="<%= data.seller.logo %>" alt="Logo">
+      <% } %>
+    </div>
+  </header>
+
+  <!-- RECHNUNGSINFO -->
+  <section>
+    <h2>Rechnung</h2>
+    <p>
+      Rechnungsnummer: <strong><%= data.invoiceNumber %></strong><br>
+      Datum: <%= data.date %>
+    </p>
+  </section>
+
+  <!-- KUNDE -->
+  <section class="customer">
+    <h3>Rechnung an</h3>
+    <p>
+      <strong><%= data.buyer.name %></strong><br>
+      <%= data.buyer.address %>
+    </p>
+  </section>
+
+  <!-- POSITIONEN -->
+  <table>
+    <thead>
+      <tr>
+        <th>Artikel</th>
+        <th class="right">Menge</th>
+        <th class="right">Einzelpreis</th>
+        <th class="right">Gesamt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.forEach(it => { %>
+        <tr>
+          <td><%= it.name %></td>
+          <td class="right"><%= it.qty %> <%= it.unit %></td>
+          <td class="right"><%= it.price.toFixed(2) %> <%= data.currency %></td>
+          <td class="right"><%= it.lineTotal.toFixed(2) %> <%= data.currency %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <!-- SUMMEN -->
+  <table class="totals">
+    <tbody>
+      <tr>
+        <td>Zwischensumme (Netto):</td>
+        <td class="right"><%= totals.net.toFixed(2) %> <%= data.currency %></td>
+      </tr>
+      <tr>
+        <td>Umsatzsteuer (<%= (data.taxRate*100).toFixed(0) %>%):</td>
+        <td class="right"><%= totals.tax.toFixed(2) %> <%= data.currency %></td>
+      </tr>
+      <tr>
+        <td><strong>Gesamt (Brutto):</strong></td>
+        <td class="right"><strong><%= totals.gross.toFixed(2) %> <%= data.currency %></strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="clear: both;"></div>
+
+  <!-- HINWEISE -->
+  <p class="notes"><%= data.notes %></p>
+
+  <!-- FOOTER -->
+  <footer>
+    <%= data.seller.name %> · <%= data.seller.address %> · USt-IdNr. <%= data.seller.vatId %>
+  </footer>
+</body>
+</html>

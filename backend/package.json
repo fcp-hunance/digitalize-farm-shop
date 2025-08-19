@@ -1,23 +1,22 @@
 {
-  "name": "digitalize-farm-shop-backend",
+  "name": "kassensystem-backend",
   "version": "1.0.0",
-  "description": "Backend API server for Digitalize Farm Shop using Express.js",
-  "main": "src/index.js",
+  "description": "Backend für das Kassensystem",
+  "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
-  "keywords": [
-    "express",
-    "api",
-    "farm-shop"
-  ],
-  "author": "Sarah Behrendt, Sophie Wiefels, Cantez Singin, Marten Aboul Kataa, Fernando Conde Pereira",
+  "author": "Marten",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^16.3.1",
-    "express": "^4.19.2",
-    "mariadb": "^3.1.4"
+    "ejs": "^3.1.9",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mariadb": "^3.1.2",
+    "puppeteer": "^24.9.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
