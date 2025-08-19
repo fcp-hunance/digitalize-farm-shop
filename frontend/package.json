@@ -17,10 +17,12 @@
     "author": "Sarah Behrendt, Sophie Wiefels, Cantez Singin, Marten Aboul Kataa, Fernando Conde Pereira",
     "license": "MIT",
     "dependencies": {
+        "axios": "^1.7.7",
+        "jwt-decode": "^4.0.0",
         "react": "^18.3.0",
         "react-dom": "^18.3.0",
-        "axios": "^1.7.7",
-        "jwt-decode": "^4.0.0"
+        "react-router-dom": "^7.8.1",
+        "recharts": "^3.1.2"
     },
     "devDependencies": {
         "@vitejs/plugin-react": "^4.2.1",

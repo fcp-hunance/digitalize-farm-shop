@@ -1,0 +1,18 @@
+.kassier-container {
+  padding: 2rem;
+}
+
+.kassier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-btn {
+  background: #256428;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}

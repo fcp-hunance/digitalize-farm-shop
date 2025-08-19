@@ -1,0 +1,59 @@
+.lager-container {
+  padding: 2rem;
+}
+
+.lager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-btn {
+  background: #256428;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.lager-content {
+  margin-top: 2rem;
+}
+
+.lager-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.lager-table th,
+.lager-table td {
+  border: 1px solid #ddd;
+  padding: 0.8rem;
+  text-align: left;
+}
+
+.lager-table th {
+  background: #256428;
+  color: white;
+}
+
+.lager-table tr:nth-child(even) {
+  background: #f5f5f5;
+}
+
+.action-btn {
+  margin-right: 0.5rem;
+  background: #35b43c;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  background: #256428;
+}
+
