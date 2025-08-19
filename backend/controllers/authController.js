@@ -1,41 +1,57 @@
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const pool = require('./db');
+require('dotenv').config();
 
 
 
-// Token erstellen und zurücksenden für Tokenhandling in Front und Backend
-
-
-
+const app = express();
+app.use(express.json());
 
 async function login(req, res) {
   const { username, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Benutzername und Passwort erforderlich' });
-  }
 
-  try {
+  if (!username || !password) {
+  return res.status(400).json({ error: 'Benutzername und Passwort erforderlich' });
+  }
+ try {
+    // Statt direktem Query -> Model nutzen
     const user = await userModel.findByUsername(username);
 
     if (!user) {
-      return res.status(401).json({ error: 'Benutzer nicht gefunden' });
+      return res.status(401).json({ message: 'Benutzer nicht gefunden' });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.passwort);
-
-    if (!passwordMatch) {
-      return res.status(401).json({ error: 'Falsches Passwort' });
+    // Passwortprüfung
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Falsches Passwort' });
     }
 
-    return res.json({ message: 'Erfolgreich angemeldet', user: { id: user.id, username: user.username } });
+    // JWT generieren
+    const token = jwt.sign(
+      { username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '10h' }
+    );
 
+    res.status(200).json({
+      message: 'Erfolgreich angemeldet',
+      token,
+      user: user.username,
+      role: user.role,
+    });
   } catch (err) {
-    console.error('Login-Fehler:', err);
-    res.status(500).json({ error: 'Interner Serverfehler' });
+    console.error(err);
+    res.status(500).json({ message: 'Interner Serverfehler' });
   }
-}
+};
 
+
+app.listen(3000, () => console.log('Server läuft auf Port 3000'));
 
 async function register(req, res) {
   const { username, password } = req.body;
