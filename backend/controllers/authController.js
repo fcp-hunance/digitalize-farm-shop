@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const pool = require('./db');
+const db = require('../db'); // falls die Datei db.js in db-Ordner liegt
 require('dotenv').config();
 
 
@@ -51,7 +51,7 @@ async function login(req, res) {
 };
 
 
-app.listen(3000, () => console.log('Server läuft auf Port 3000'));
+// app.listen(3000, () => console.log('Server läuft auf Port 3000'));
 
 async function register(req, res) {
   const { username, password } = req.body;
