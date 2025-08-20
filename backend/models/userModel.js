@@ -7,10 +7,10 @@ async function findByUsername(name) {
 
 
 
-async function createUser(name, hashedPassword, hashedPin) {
+async function createUser(name, hashedPassword, hashedPin, role) {
   const result = await db.query(
-    'INSERT INTO t_user (Username, PasswprdHash, PIN) VALUES (?, ?, ?)',
-    [name, hashedPassword, hashedPin]
+    'INSERT INTO t_user (Username, PasswordHash, PIN, Role) VALUES (?, ?, ?, ?)',
+    [name, hashedPassword, hashedPin, role]
   );
   return result;
 }

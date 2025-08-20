@@ -3,7 +3,9 @@ const router = express.Router();
 const warehouseController = require('../controllers/warehouseController');
 const lagerController = require('../controllers/warehouseController');
 const {createOrderController} = require('../controllers/orderController');
+const {createDeliveryNote} = require ('../controllers/orderController');
 const verifyToken = require('../services/authMiddleware');
+const {previewDeliveryNote} = require ('../controllers/orderController');
 // z.B. GET /lager/bestand
 router.get('/bestand', verifyToken, warehouseController.getStock);
 

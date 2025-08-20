@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 async function login(req, res) {
-  const { username, password } = req.body;
+  const { username, password, } = req.body;
 
 
   if (!username || !password) {
@@ -37,7 +37,7 @@ async function login(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: '10h' }
     );
-    
+
     res.status(200).json({
       message: 'Erfolgreich angemeldet',
       token,
@@ -84,10 +84,10 @@ async function pinLogin(req, res) {
 
 
 async function register(req, res) {
-  const { username, password, pin } = req.body;
+  const { username, password, pin, role } = req.body;
 
-  if (!username || !password || !pin) {
-    return res.status(400).json({ error: 'Username und Passwort, sowie PIN erforderlich' });
+  if (!username || !password || !pin || !role) {
+    return res.status(400).json({ error: 'Username und Passwort, sowie PIN und Rolle erforderlich' });
   }
 
   const existingUser = await userModel.getUserByUsername(username);
@@ -97,7 +97,7 @@ async function register(req, res) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const hashedPin = await bcrypt.hash(pin, 10);
-  await userModel.createUser(username, hashedPassword, hashedPin);
+  await userModel.createUser(username, hashedPassword, hashedPin, role);
 
   res.json({ message: 'Benutzer erfolgreich registriert' });
 }
