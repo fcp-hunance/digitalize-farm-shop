@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
-<<<<<<< HEAD:backend/routes/warehouse.js
 const warehouseController = require('../controllers/warehouseController');
-=======
 const lagerController = require('../controllers/lagerController');
 const {createOrderController} = require('../controllers/orderController');
->>>>>>> 29746cae6fbdc9d7f0abf7052315a1f93c3a8c04:backend/routes/lager.js
 const verifyToken = require('../services/authMiddleware');
 // z.B. GET /lager/bestand
 router.get('/bestand', verifyToken, warehouseController.getStock);
