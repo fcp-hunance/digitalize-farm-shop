@@ -9,4 +9,14 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 
-module.exports = pool;
+async function query(sql, params) {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    return await conn.query(sql, params);
+  } finally {
+    if (conn) conn.release();
+  }
+}
+
+module.exports = { query, pool };

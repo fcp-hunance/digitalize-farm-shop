@@ -136,17 +136,31 @@ If all products exist, the server responds with:
 }
 ```
 The gesamtbetrag will vary depending on the product prices stored in the database.
-### Create Invoice //TODO Update with the logic for the DB
+### Create Order and Delivery Note
+This route create the order and the delivery note in PDF, or a preview in HTML and send the info to the database:
+POST http://localhost:3000/api/lager/order
+POST http://localhost:3000/api/lager/order/delivery.pdf
+POST http://localhost:3000/api/lager/order/delivery.html
+
+In body the customerId and items list:
+```
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 1, "quantity": 5 },
+    { "productId": 2, "quantity": 2 }
+  ]
+}
+
+```
+### Generate Monthly Invoice
 This route create the invoice in PDF, or a preview in HTML:
-POST http://localhost:3000/api/invoice/invoice.pdf or http://localhost:3000/api/invoice/invoice.html
+POST http://localhost:3000/api/invoice/monthly.pdf or http://localhost:3000/api/invoice/monthly.html
 In body the items list:
 ```
 {
-  "items": [
-    { "id": "coffee", "qty": 2 },
-    { "id": "croissant", "qty": 1 },
-    { "id": "milk_oat", "qty": 0.5 }
-  ]
+  "customerId": 1,
+  "month": "2025-08"
 }
 ```
 ## Notes
