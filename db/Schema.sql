@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS `t_user` (
   `Username` varchar(30) NOT NULL,
   `PasswordHash` char(60) NOT NULL,
   `PIN` char(97) DEFAULT NULL,
+  'Role'varchar(30) NOT NULL,
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `Username` (`Username`),
   UNIQUE KEY `PersonID` (`PersonID`),
