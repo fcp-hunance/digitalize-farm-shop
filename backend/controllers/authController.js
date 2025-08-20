@@ -37,7 +37,7 @@ async function login(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: '10h' }
     );
-
+    
     res.status(200).json({
       message: 'Erfolgreich angemeldet',
       token,
@@ -107,5 +107,5 @@ async function register(req, res) {
 module.exports = {
   login,
   register,
-  pinLogin,
+  pinLogin
 };
