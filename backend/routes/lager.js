@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const lagerController = require('../controllers/lagerController');
-const {createOrderController} = require('../controllers/orderController');
+const {createOrderController, createDeliveryNote, previewDeliveryNote} = require('../controllers/orderController');
 const verifyToken = require('../services/authMiddleware');
 // z.B. GET /lager/bestand
 router.get('/bestand', verifyToken, lagerController.getBestand);
