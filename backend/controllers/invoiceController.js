@@ -5,15 +5,18 @@ const ejs = require("ejs");
 
 async function createInvoice(req, res) {
   try {
-    const { items } = req.body;
+    const { items, customer } = req.body;
     const invoice = calcInvoice(items);
+
+    const buyer = customer.reduce((acc, obj) => ({ ...acc, ...obj}), {});
 
     const invoiceData = {
       data: {
         invoiceNumber: "INV-" + Date.now(),
         date: new Date().toLocaleDateString("de-DE"),
-        seller: { name: "Beispiel GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
-        buyer: { name: "Max Mustermann", address: "Testweg 12, Berlin" },
+        deliveryDate: new Date().toLocaleDateString("de-DE"),
+        seller: { name: "Hofladen Müller GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
+        buyer: { name: buyer.name, address: buyer.address },
         taxRate: 0.19,
         currency: "€",
         notes: "Vielen Dank für Ihren Einkauf!"
@@ -35,15 +38,17 @@ async function createInvoice(req, res) {
 
 async function previewInvoice(req, res) {
   try {
-    const { items } = req.body;
+    const { items, customer } = req.body;
     const invoice = calcInvoice(items);
+    const buyer = customer.reduce((acc, obj) => ({ ...acc, ...obj}), {});
 
     const invoiceData = {
       data: {
         invoiceNumber: "INV-" + Date.now(),
         date: new Date().toLocaleDateString("de-DE"),
-        seller: { name: "Beispiel GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
-        buyer: { name: "Max Mustermann", address: "Testweg 12, Berlin" },
+        deliveryDate: new Date().toLocaleDateString("de-DE"),
+        seller: { name: "Hofladen Müller GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
+        buyer: { name: buyer.name, address: buyer.address },
         taxRate: 0.19,
         currency: "€",
         notes: "Vielen Dank für Ihren Einkauf!"
