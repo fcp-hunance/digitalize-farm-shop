@@ -44,8 +44,8 @@
 <body>
   <header>
     <h1>Delivery Note</h1>
-    <p>Order ID: <strong><%= order.orderId %></strong></p>
-    <p>Date: <strong><%= order.deliveryDate %></strong></p>
+    <p>Order ID: <strong><%= order.idOrder %></strong></p>
+    <p>Date: <strong><%= order.deliveryDate || order.orderDate %></strong></p>
   </header>
 
   <div class="customer">

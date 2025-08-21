@@ -95,9 +95,15 @@ async function getOrderById(idOrder) {
   // 1. Fetch order and customer info
   const rows = await query(
     `SELECT o.idOrder, o.dateOrderDate, o.fkCustomer, 
-            c.strAddress AS customerAddress, c.strPhone AS customerPhone, c.strEmail AS customerEmail
+            c.strFirstName AS customerFirstName,
+            c.strLastName AS customerLastName,
+            c.strAddress AS customerAddress,
+            c.strPhone AS customerPhone,
+            c.strEmail AS customerEmail,
+            dn.dateDeliveryDate
      FROM t_Order o
      JOIN t_MajorCustomer c ON o.fkCustomer = c.idCustomer
+     LEFT JOIN t_DeliveryNote dn ON dn.fkOrder = o.idOrder
      WHERE o.idOrder = ?`,
     [idOrder]
   );
@@ -107,18 +113,20 @@ async function getOrderById(idOrder) {
 
   // 2. Fetch products for this order
   const products = await query(
-    `SELECT p.idProduct, p.strProductName AS productName, po.intQuantity
+    `SELECT p.idProduct, p.strProductName AS productName, po.intQuantity, u.strUnitName AS unit
      FROM t_Product_Order po
      JOIN t_Product p ON po.fkProduct = p.idProduct
+     LEFT JOIN t_Unit u ON p.fkUnit = u.idUnit
      WHERE po.fkOrder = ?`,
     [idOrder]
   );
 
-  // 3. Format the result
   return {
     idOrder: order.idOrder,
     orderDate: order.dateOrderDate,
+    deliveryDate: order.dateDeliveryDate,
     customer: {
+      name: `${order.customerFirstName} ${order.customerLastName}`,
       address: order.customerAddress,
       phone: order.customerPhone,
       email: order.customerEmail
@@ -126,7 +134,8 @@ async function getOrderById(idOrder) {
     items: products.map(p => ({
       productId: p.idProduct,
       productName: p.productName,
-      quantity: p.intQuantity
+      quantity: p.intQuantity,
+      unit: p.unit
     }))
   };
 }

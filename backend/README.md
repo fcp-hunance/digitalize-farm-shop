@@ -161,7 +161,7 @@ POST http://localhost:3000/api/wareHouse/order/delivery.pdf
 POST http://localhost:3000/api/wareHouse/order/delivery.html
 ```
 {
-  "orderId": 1
+  "idOrder": 1
 }
 ```
 ### 5. Generate Monthly Invoice
