@@ -20,16 +20,16 @@ INSERT INTO `t_Unit` (`idUnit`, `strUnit`) VALUES
 INSERT INTO `t_Product` (`idProduct`, `strProductName`, `decPrice`, `fkGroup`, `fkUnit`, `intStock`) VALUES
    	(1, 'Äpfel', 2.50, 1, 1, 120),      -- per kg
     (2, 'Kartoffeln', 1.20, 1, 1, 200), -- per kg
-    (3, 'Milch', 1.10, 1, 3, 80),       -- per liter
-    (4, 'Brot', 3.20, 2, 2, 50),        -- per loaf
-    (5, 'Eier', 2.80, 3, 2, 60),        -- per 10 pcs
-    (6, 'Fleisch', 12.50, 3, 1, 40),    -- per kg
+    (3, 'Milch', 1.10, 1, 3, 180),       -- per liter
+    (4, 'Brot', 3.20, 2, 2, 15),        -- per loaf
+    (5, 'Eier', 2.80, 3, 2, 30),        -- per 10 pcs
+    (6, 'Fleisch', 12.50, 3, 1, 20),    -- per kg
     (7, 'Honig', 6.90, 2, 3, 30),       -- per jar (liter unit)
     (8, 'Mais', 1.50, 1, 1, 150),       -- per kg
     (9, 'Salat', 1.80, 1, 2, 70),       -- per head (Stück)
     (10, 'Möhren', 2.00, 1, 1, 110),    -- per kg 
-    (11, 'Brötchen', 0.40, 2, 2, 180),  -- per piece
-    (12, 'Erdbeeren', 3.90, 2, 1, 90);  -- per kg
+    (11, 'Brötchen', 0.40, 2, 2, 45),  -- per piece
+    (12, 'Erdbeeren', 3.90, 2, 1, 30);  -- per kg
 
 -- Major Customers
 INSERT INTO `t_MajorCustomer` (`idCustomer`, `strAddress`, `strPhone`, `strEmail`) VALUES
@@ -39,7 +39,7 @@ INSERT INTO `t_MajorCustomer` (`idCustomer`, `strAddress`, `strPhone`, `strEmail
 
 -- Users (bcrypt hash placeholders, role added)
 INSERT INTO `t_User` (`idUser`, `fkPerson`, `strUsername`, `strPasswordHash`, `strPIN`, `strRole`) VALUES
-    (1, 1, 'Hans', 'admin', NULL, 'admin'), -- It's necessary to create the Hashed Password first desactivating the token control in backend.
+    (1, 1, 'Hans', 'admin', NULL, 'admin'); -- It's necessary to create the Hashed Password first desactivating the token control in backend.
 
 -- VAT Rates
 INSERT INTO `t_Vat` (`idVAT`, `decTaxRate`, `dateValidFrom`, `dateValidUntil`) VALUES
