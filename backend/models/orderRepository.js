@@ -1,60 +1,61 @@
 const { query } = require("../db");
 
 // Create an order with products and a delivery note
-async function createOrderWithDelivery(customerId, items) {
+async function createOrderWithDelivery(idCustomer, items, decTotal) {
   // 1. Insert order
+  const total = parseFloat(decTotal);
   const orderResult = await query(
-    `INSERT INTO t_order (OrderDate, CustomerID) VALUES (CURDATE(), ?)`,
-    [customerId]
+    `INSERT INTO t_Order (dateOrderDate, fkCustomer, decTotal) VALUES (CURDATE(), ?, ?)`,
+    [idCustomer, total]
   );
-  const orderId = Number(orderResult.insertId);
+  const idOrder = Number(orderResult.insertId);
 
   // 2. Add products to the order
   for (const item of items) {
     await query(
-      `INSERT INTO t_product_order (ProductID, OrderID, Quantity) VALUES (?, ?, ?)`,
-      [item.productId, orderId, item.quantity]
+      `INSERT INTO t_Product_Order (fkProduct, fkOrder, intQuantity) VALUES (?, ?, ?)`,
+      [item.productId, idOrder, item.quantity]
     );
   }
 
   // 3. Create a delivery note
   const deliveryResult = await query(
-    `INSERT INTO t_deliverynote (DeliveryDate, OrderID) VALUES (CURDATE(), ?)`,
-    [orderId]
+    `INSERT INTO t_DeliveryNote (dateDeliveryDate, fkOrder) VALUES (CURDATE(), ?)`,
+    [idOrder]
   );
-  const deliveryNoteId = Number(deliveryResult.insertId);
+  const idDeliveryNote = Number(deliveryResult.insertId);
 
-  return { orderId, deliveryNoteId };
+  return { idOrder, idDeliveryNote };
 }
 
 // Get all orders including products for a customer in a given month
-async function getOrdersByMonth(customerId, month) {
+async function getOrdersByMonth(idCustomer, month) {
   const [year, mon] = month.split("-");
 
   const orders = await query(
-    `SELECT o.OrderID, o.OrderDate, dn.DeliveryNoteID, 
-            po.ProductID, po.Quantity
-     FROM t_order o
-     JOIN t_deliverynote dn ON dn.OrderID = o.OrderID
-     JOIN t_product_order po ON po.OrderID = o.OrderID
-     WHERE o.CustomerID = ? AND YEAR(o.OrderDate) = ? AND MONTH(o.OrderDate) = ?`,
-    [customerId, year, mon]
+    `SELECT o.idOrder, o.dateOrderDate, dn.idDeliveryNote, 
+            po.fkProduct, po.intQuantity
+     FROM t_Order o
+     JOIN t_DeliveryNote dn ON dn.fkOrder = o.idOrder
+     JOIN t_Product_Order po ON po.fkOrder = o.idOrder
+     WHERE o.fkCustomer = ? AND YEAR(o.dateOrderDate) = ? AND MONTH(o.dateOrderDate) = ?`,
+    [idCustomer, year, mon]
   );
 
   // Group data by order
   const grouped = {};
   orders.forEach(r => {
-    if (!grouped[r.OrderID]) {
-      grouped[r.OrderID] = {
-        orderId: r.OrderID,
-        orderDate: r.OrderDate,
-        deliveryNoteId: r.DeliveryNoteID,
+    if (!grouped[r.idOrder]) {
+      grouped[r.idOrder] = {
+        idOrder: r.idOrder,
+        orderDate: r.dateOrderDate,
+        idDeliveryNote: r.idDeliveryNote,
         items: [],
       };
     }
-    grouped[r.OrderID].items.push({
-      productId: r.ProductID,
-      quantity: r.Quantity,
+    grouped[r.idOrder].items.push({
+      productId: r.fkProduct,
+      quantity: r.intQuantity,
     });
   });
 
@@ -62,43 +63,43 @@ async function getOrdersByMonth(customerId, month) {
 }
 
 // Create an invoice and link it to delivery notes
-async function createInvoice(customerId, month, orders) {
+async function createInvoice(orders) {
   // Insert invoice
   const invoiceResult = await query(
-    `INSERT INTO t_invoice (InvoiceDate, IsPaid) VALUES (CURDATE(), 0)`
+    `INSERT INTO t_Invoice (dateInvoiceDate, boolIsPaid) VALUES (CURDATE(), 0)`
   );
-  const invoiceId = Number(invoiceResult.insertId);
+  const idInvoice = Number(invoiceResult.insertId);
 
   // Link delivery notes to the invoice
   for (const order of orders) {
     await query(
-      `INSERT INTO t_invoice_deliverynote (InvoiceID, DeliveryNoteID) VALUES (?, ?)`,
-      [invoiceId, order.deliveryNoteId]
+      `INSERT INTO t_Invoice_DeliveryNote (fkInvoice, fkDeliveryNote) VALUES (?, ?)`,
+      [idInvoice, order.idDeliveryNote]
     );
   }
 
-  return invoiceId;
+  return idInvoice;
 }
 
 // Get customer data
-async function getCustomer(customerId) {
+async function getCustomer(idCustomer) {
   const rows = await query(
-    `SELECT * FROM t_majorcustomer WHERE CustomerID = ?`,
-    [customerId]
+    `SELECT * FROM t_MajorCustomer WHERE idCustomer = ?`,
+    [idCustomer]
   );
   return rows[0];
 }
 
 // Get one order with details
-async function getOrderById(orderId) {
+async function getOrderById(idOrder) {
   // 1. Fetch order and customer info
   const rows = await query(
-    `SELECT o.OrderID, o.OrderDate, o.CustomerID, 
-            c.Address AS customerAddress, c.Phone AS customerPhone, c.Email AS customerEmail
-     FROM t_order o
-     JOIN t_majorcustomer c ON o.CustomerID = c.CustomerID
-     WHERE o.OrderID = ?`,
-    [orderId]
+    `SELECT o.idOrder, o.dateOrderDate, o.fkCustomer, 
+            c.strAddress AS customerAddress, c.strPhone AS customerPhone, c.strEmail AS customerEmail
+     FROM t_Order o
+     JOIN t_MajorCustomer c ON o.fkCustomer = c.idCustomer
+     WHERE o.idOrder = ?`,
+    [idOrder]
   );
 
   const order = rows[0];
@@ -106,26 +107,26 @@ async function getOrderById(orderId) {
 
   // 2. Fetch products for this order
   const products = await query(
-    `SELECT p.ProductID, p.ProductName AS productName, po.Quantity
-     FROM t_product_order po
-     JOIN t_product p ON po.ProductID = p.ProductID
-     WHERE po.OrderID = ?`,
-    [orderId]
+    `SELECT p.idProduct, p.strProductName AS productName, po.intQuantity
+     FROM t_Product_Order po
+     JOIN t_Product p ON po.fkProduct = p.idProduct
+     WHERE po.fkOrder = ?`,
+    [idOrder]
   );
 
   // 3. Format the result
   return {
-    orderId: order.OrderID,
-    orderDate: order.OrderDate,
+    idOrder: order.idOrder,
+    orderDate: order.dateOrderDate,
     customer: {
       address: order.customerAddress,
       phone: order.customerPhone,
       email: order.customerEmail
     },
     items: products.map(p => ({
-      productId: p.ProductID,
+      productId: p.idProduct,
       productName: p.productName,
-      quantity: p.Quantity
+      quantity: p.intQuantity
     }))
   };
 }

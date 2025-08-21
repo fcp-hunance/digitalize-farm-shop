@@ -13,7 +13,7 @@ const testRoute = require('./routes/test');
 app.use(express.json()); // JSON-Body parsen
 
 app.use('/api/cashDesk', cashDeskRoute);
-app.use('/api/wareHouse', warehouseRoute);
+app.use('/api/warehouse', warehouseRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/invoice', invoiceRoute);
 app.use('/api/receipt', receiptRoute);

@@ -1,7 +1,7 @@
 const db = require('../db');
 
 async function findByUsername(name) {
-  const rows = await db.query('SELECT * FROM t_user WHERE Username = ?', [name]);
+  const rows = await db.query('SELECT * FROM t_User WHERE strUsername = ?', [name]);
   return rows[0]; // erste Zeile zurückgeben
 }
 
@@ -9,7 +9,7 @@ async function findByUsername(name) {
 
 async function createUser(name, hashedPassword, hashedPin, role) {
   const result = await db.query(
-    'INSERT INTO t_user (Username, PasswordHash, PIN, Role) VALUES (?, ?, ?, ?)',
+    'INSERT INTO t_User (strUsername, strPasswordHash, strPIN, strRole) VALUES (?, ?, ?, ?)',
     [name, hashedPassword, hashedPin, role]
   );
   return result;
@@ -17,7 +17,7 @@ async function createUser(name, hashedPassword, hashedPin, role) {
 
 async function getUserByUsername(name) {
   const rows = await db.query(
-    'SELECT * FROM t_user WHERE Username = ?',
+    'SELECT * FROM t_User WHERE strUsername = ?',
     [name]
   );
   return rows[0];
