@@ -42,7 +42,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,7 +56,7 @@
   border-radius: 12px;
   width: 300px;
   max-width: 90%;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -102,10 +102,11 @@
 
 /* Warenkorb */
 .warenkorb {
-  margin-top: 20px;
+  margin: auto;
   text-align: left;
   border-top: 2px solid #ddd;
   padding-top: 15px;
+  max-width: 800px;
 }
 
 .zahlen-button {
@@ -128,7 +129,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -139,7 +140,7 @@
   background: white;
   padding: 30px 40px;
   border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   text-align: center;
   width: 400px;
 }
@@ -181,6 +182,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #f1f1f1c9; /* Leichter grauer Hintergrund */
+  padding: 10px; /* Bietet etwas Abstand */
+  border-radius: 8px; /* Abgerundete Ecken */
+  margin-bottom: 10px; /* Abstand zwischen den Listenelementen */
 }
 
 .storno-button {
@@ -230,3 +235,17 @@
   background-color: #3e8e41;
 }
 
+.logout-button {
+  background: #256428;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-left: 700px;
+}
+
+.logout-button:hover {
+  background: #36913b;
+}

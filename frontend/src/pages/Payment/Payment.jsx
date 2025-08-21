@@ -1,26 +1,59 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Payment.css"; // Optional, falls du eigene Styles willst
+import "./Payment.css";
 
 const Payment = ({ warenkorb, setWarenkorb }) => {
   const navigate = useNavigate();
   const [zahlungsart, setZahlungsart] = useState("bar");
-  const [betrag, setBetrag] = useState("0.00");
+  const [gesamtbetrag, setGesamtbetrag] = useState("0.00");
+  const [rabatt, setRabatt] = useState("0.00");
+  const [zuZahlenderBetrag, setZuZahlenderBetrag] = useState("0.00");
+  const [showModal, setShowModal] = useState(false);
 
-  // Gesamtbetrag berechnen, wenn sich der Warenkorb ändert
   useEffect(() => {
-    const gesamt = warenkorb
-      .reduce((sum, item) => sum + parseFloat(item.preis), 0)
-      .toFixed(2);
-    setBetrag(gesamt);
+    // Berechne den Gesamtbetrag nur einmal beim Laden der Komponente
+    const gesamt = warenkorb.reduce(
+      (sum, item) => sum + parseFloat(item.preis),
+      0
+    );
+    setGesamtbetrag(gesamt.toFixed(2));
   }, [warenkorb]);
 
-  const handleZurueck = () => navigate("/");
+  useEffect(() => {
+    // Berechne den zu zahlenden Betrag, wenn sich der Gesamtbetrag oder der Rabatt ändert
+    const finalAmount = Math.max(0, parseFloat(gesamtbetrag) - parseFloat(rabatt));
+    setZuZahlenderBetrag(finalAmount.toFixed(2));
+  }, [gesamtbetrag, rabatt]);
+
+  const handleZurueck = () => navigate("/kassier");
 
   const handleZahlung = () => {
-    alert(`Zahlung abgeschlossen!\nBetrag: ${betrag} €\nZahlungsart: ${zahlungsart}`);
-    setWarenkorb([]); // Warenkorb leeren
-    navigate("/");
+    setShowModal(true);
+  };
+
+  const handleKassenbonDrucken = () => {
+    // ✅ HIER IST DIE ÄNDERUNG: Weiterleitung zur Kassier-Seite
+    setShowModal(false);
+    setWarenkorb([]);
+    navigate("/kassier");
+  };
+
+  // Inline Modal-Komponente
+  const Modal = ({ show, onClose, title, children }) => {
+    if (!show) {
+      return null;
+    }
+
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h4 className="modal-title">{title}</h4>
+          </div>
+          <div className="modal-body">{children}</div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -35,49 +68,75 @@ const Payment = ({ warenkorb, setWarenkorb }) => {
           <ul>
             {warenkorb.map((item, index) => (
               <li key={index}>
-                {item.name} - {item.menge} {item.einheit} - Rabatt: {item.rabatt} € - {item.preis} €
+                {item.name} - {item.menge} {item.einheit} - Rabatt:{" "}
+                {item.rabatt} € - {item.preis} €
               </li>
             ))}
           </ul>
         </div>
       )}
 
+      {/* Abschnitt für Beträge und Rabatt */}
       <div className="betrag-section">
-        <label>Gesamtbetrag anpassen:</label>
+        <label>Gesamtbetrag (Warenkorb):</label>
+        <input type="number" step="0.01" value={gesamtbetrag} readOnly />
+      </div>
+
+      <div className="betrag-section">
+        <label>Rabatt in €:</label>
         <input
           type="number"
           step="0.01"
-          value={betrag}
-          onChange={(e) => setBetrag(e.target.value)}
+          value={rabatt}
+          onChange={(e) => setRabatt(e.target.value)}
         />
+      </div>
+
+      <div className="betrag-section">
+        <label>Zu zahlender Betrag:</label>
+        <input type="number" step="0.01" value={zuZahlenderBetrag} readOnly />
       </div>
 
       <div className="zahlungsart-section">
         <h3>Zahlungsart auswählen:</h3>
-        <label>
-          <input
-            type="radio"
-            value="bar"
-            checked={zahlungsart === "bar"}
-            onChange={(e) => setZahlungsart(e.target.value)}
-          />
+        <button
+          className={
+            zahlungsart === "bar" ? "payment-button active" : "payment-button"
+          }
+          onClick={() => setZahlungsart("bar")}
+        >
           Barzahlung
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="karte"
-            checked={zahlungsart === "karte"}
-            onChange={(e) => setZahlungsart(e.target.value)}
-          />
+        </button>
+        <button
+          className={
+            zahlungsart === "karte"
+              ? "payment-button active"
+              : "payment-button"
+          }
+          onClick={() => setZahlungsart("karte")}
+        >
           Kartenzahlung
-        </label>
+        </button>
       </div>
 
       <div className="bezahlen-buttons">
         <button onClick={handleZurueck}>🔙 Zurück</button>
         <button onClick={handleZahlung}>✅ Bezahlen</button>
       </div>
+
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title="Zahlung erfolgreich!"
+      >
+        <p>
+          Gesamtbetrag: **{zuZahlenderBetrag} €**
+          <br />
+          Zahlungsart: **
+          {zahlungsart === "bar" ? "Barzahlung" : "Kartenzahlung"}**
+        </p>
+        <button onClick={handleKassenbonDrucken}>Kassenbon drucken</button>
+      </Modal>
     </div>
   );
 };
