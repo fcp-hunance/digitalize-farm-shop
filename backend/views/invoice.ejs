@@ -40,7 +40,8 @@
     <h2>Rechnung</h2>
     <p>
       Rechnungsnummer: <strong><%= data.invoiceNumber %></strong><br>
-      Datum: <%= data.date %>
+      Rechnungsdatum: <%= data.date %><br>
+      Leistungsdatum: <%= data.deliveryDate || data.date %>
     </p>
   </section>
 

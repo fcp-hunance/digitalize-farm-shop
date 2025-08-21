@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delivery Note - <%= order.orderId %></title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      font-size: 14px;
+      color: #333;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h1 {
+      margin: 0;
+    }
+    .customer, .order-info {
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Delivery Note</h1>
+    <p>Order ID: <strong><%= order.idOrder %></strong></p>
+    <p>Date: <strong><%= order.deliveryDate || order.orderDate %></strong></p>
+  </header>
+
+  <div class="customer">
+    <h3>Customer</h3>
+    <p><strong>Name:</strong> <%= order.customer.name %></p>
+    <p><strong>Address:</strong> <%= order.customer.address %></p>
+    <p><strong>Phone:</strong> <%= order.customer.phone %></p>
+    <% if(order.customer.email){ %>
+      <p><strong>Email:</strong> <%= order.customer.email %></p>
+    <% } %>
+  </div>
+
+  <div class="order-info">
+    <h3>Items</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% order.items.forEach((item, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= item.productName %></td>
+            <td><%= item.quantity %></td>
+            <td><%= item.unit || "pcs" %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p>Thank you for your business!</p>
+  </div>
+</body>
+</html>
