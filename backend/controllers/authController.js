@@ -26,14 +26,14 @@ async function login(req, res) {
     }
 
     // Passwortprüfung
-    const isPasswordValid = await bcrypt.compare(password, user.PasswordHash);
+    const isPasswordValid = await bcrypt.compare(password, user.strPasswordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Falsches Passwort' });
     }
 
     // JWT generieren
     const token = jwt.sign(
-      { username: user.username, role: user.role },
+      { username: user.username, role: user.strRole },
       process.env.JWT_SECRET,
       { expiresIn: '10h' }
     );
@@ -41,8 +41,8 @@ async function login(req, res) {
     res.status(200).json({
       message: 'Erfolgreich angemeldet',
       token,
-      user: user.Username,
-      role: user.Role,
+      user: user.strUsername,
+      role: user.strRole,
     });
   } catch (err) {
     console.error(err);
@@ -65,15 +65,15 @@ async function pinLogin(req, res) {
     }
 
     // Passwortprüfung
-    const isPINvalid = await bcrypt.compare(pin, user.pin);
+    const isPINvalid = await bcrypt.compare(pin, user.strPIN);
     if (!isPINvalid) {
       return res.status(401).json({ message: 'Falscher PIN' });
     }
 
     res.status(200).json({
       message: 'Erfolgreich angemeldet',
-      user: user.username,
-      role: user.role,
+      user: user.strUsername,
+      role: user.strRole,
     });
   } catch (err) {
     console.error(err);
