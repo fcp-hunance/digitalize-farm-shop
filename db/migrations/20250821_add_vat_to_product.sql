@@ -1,0 +1,5 @@
+ALTER TABLE t_Product
+  ADD COLUMN fkVAT TINYINT(3) UNSIGNED DEFAULT NULL,
+  ADD CONSTRAINT fk_Product_VAT FOREIGN KEY (fkVAT) REFERENCES t_Vat (idVAT);
+UPDATE t_Product SET fkVAT = 1 WHERE idProduct IN (1,2,3,4,5,6,7,8,9,10,11,12); -- 7%
+-- UPDATE t_Product SET fkVAT = 2 WHERE idProduct IN (); -- 19%

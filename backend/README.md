@@ -103,7 +103,7 @@ If the credentials are correct, the server will respond with:
 ```
 TODO in this response will be also created a Token for authentication.
 // Generate a JWT token for authentication, here a Password is needed (Put JWT_SECRET variable in .env), userRole will be became from DB.
-```
+```js
   const token = jwt.sign(
       { username, role: userRole },
       JWT_SECRET,
@@ -138,9 +138,7 @@ If all products exist, the server responds with:
 The gesamtbetrag will vary depending on the product prices stored in the database.
 ### Create Order and Delivery Note
 This route create the order and the delivery note in PDF, or a preview in HTML and send the info to the database:
-POST http://localhost:3000/api/lager/order
-POST http://localhost:3000/api/lager/order/delivery.pdf
-POST http://localhost:3000/api/lager/order/delivery.html
+POST http://localhost:3000/api/wareHouse/order
 
 In body the customerId and items list:
 ```
@@ -152,6 +150,13 @@ In body the customerId and items list:
   ]
 }
 
+```
+POST http://localhost:3000/api/wareHouse/order/delivery.pdf
+POST http://localhost:3000/api/wareHouse/order/delivery.html
+```
+{
+  "orderId": 1
+}
 ```
 ### Generate Monthly Invoice
 This route create the invoice in PDF, or a preview in HTML:

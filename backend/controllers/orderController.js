@@ -2,6 +2,8 @@ const orderRepo = require("../models/orderRepository");
 const { generateDeliveryNotePDF, generateInvoicePDF } = require("../services/pdfService");
 const { calcInvoice } = require("../services/invoiceService");
 const { json } = require("express");
+const path = require("path");
+const ejs = require("ejs");
 
 // Controller to create an order and its delivery note
 async function createOrderController(req, res) {
@@ -10,7 +12,7 @@ async function createOrderController(req, res) {
 
     // Create order, add products, and generate delivery note
     const { orderId, deliveryNoteId } = await orderRepo.createOrderWithDelivery(customerId, items);
-    res.status(201),json({success: true, orderId, deliveryNoteId})
+    res.status(201).json({success: true, orderId, deliveryNoteId})
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not create order" });
@@ -54,7 +56,7 @@ async function previewDeliveryNote(req, res) {
     // render plain HTML without PDF
       const html = await ejs.renderFile(
         path.join(__dirname, "../views/deliveryNote.ejs"),
-        order,
+        { order },
         { async: true }
       );
 
