@@ -26,7 +26,7 @@ async function login(req, res) {
     }
 
     // Passwortprüfung
-    const isPasswordValid = await bcrypt.compare(password, user.passwort);
+    const isPasswordValid = await bcrypt.compare(password, user.PasswordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Falsches Passwort' });
     }
@@ -41,8 +41,8 @@ async function login(req, res) {
     res.status(200).json({
       message: 'Erfolgreich angemeldet',
       token,
-      user: user.username,
-      role: user.role,
+      user: user.Username,
+      role: user.Role,
     });
   } catch (err) {
     console.error(err);
