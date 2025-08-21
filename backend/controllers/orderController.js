@@ -2,15 +2,17 @@ const orderRepo = require("../models/orderRepository");
 const { generateDeliveryNotePDF, generateInvoicePDF } = require("../services/pdfService");
 const { calcInvoice } = require("../services/invoiceService");
 const { json } = require("express");
+const path = require("path");
+const ejs = require("ejs");
 
 // Controller to create an order and its delivery note
 async function createOrderController(req, res) {
   try {
-    const { customerId, items } = req.body;
+    const { idCustomer, items, decTotal } = req.body;
 
     // Create order, add products, and generate delivery note
-    const { orderId, deliveryNoteId } = await orderRepo.createOrderWithDelivery(customerId, items);
-    res.status(201),json({success: true, orderId, deliveryNoteId})
+    const { idOrder, idDeliveryNote } = await orderRepo.createOrderWithDelivery(idCustomer, items, decTotal);
+    res.status(201).json({success: true, idOrder, idDeliveryNote})
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not create order" });
@@ -19,10 +21,10 @@ async function createOrderController(req, res) {
 
 async function createDeliveryNote(req, res) {
   try {
-    const { orderId } = req.body;
+    const { idOrder } = req.body;
 
    // Fetch order info from DB
-    const order = await orderRepo.getOrderById(orderId);
+    const order = await orderRepo.getOrderById(idOrder);
 
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
@@ -31,7 +33,7 @@ async function createDeliveryNote(req, res) {
     const pdfBuffer = await generateDeliveryNotePDF(order);
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `inline; filename=delivery-note-${orderId}.pdf`);
+    res.setHeader("Content-Disposition", `inline; filename=delivery-note-${idOrder}.pdf`);
     res.send(pdfBuffer);
   } catch (err) {
     console.error(err);
@@ -42,10 +44,10 @@ async function createDeliveryNote(req, res) {
 // Generate delivery note HTML preview
 async function previewDeliveryNote(req, res) {
   try {
-     const { orderId } = req.body;
+     const { idOrder } = req.body;
 
    // Fetch order info from DB
-    const order = await orderRepo.getOrderById(orderId);
+    const order = await orderRepo.getOrderById(idOrder);
 
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
@@ -54,7 +56,7 @@ async function previewDeliveryNote(req, res) {
     // render plain HTML without PDF
       const html = await ejs.renderFile(
         path.join(__dirname, "../views/deliveryNote.ejs"),
-        order,
+        { order },
         { async: true }
       );
 

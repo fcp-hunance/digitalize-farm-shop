@@ -52,9 +52,12 @@ kassensystem-backend/
 
 ## API Overview
 - /api/auth - Mange Users Register, Login and Authentication
-- /api/kasse - Manage sales, items, tickets
-- /api/lager - Inventory management, invoices
+- /api/cashDeck - Manage sales, items, tickets
+- /api/warehouse - Inventory management, invoices
+- /api/warehouse/order - Put an order and generate the Delivery Note
 - /api/dashboard - Reporting and analytics, Produts and Users management
+- /api/invoice - Generate the invoice (PDF and preview as HTML)
+- /api/receipt - Generate the Receipt (PDF and preview as HTML)
 (Expand with detailed endpoints as you implement)
     
 ### 1. Create a User
@@ -103,7 +106,7 @@ If the credentials are correct, the server will respond with:
 ```
 TODO in this response will be also created a Token for authentication.
 // Generate a JWT token for authentication, here a Password is needed (Put JWT_SECRET variable in .env), userRole will be became from DB.
-```
+```js
   const token = jwt.sign(
       { username, role: userRole },
       JWT_SECRET,
@@ -116,6 +119,7 @@ res.status(200).json({ message: 'Login successful', token, user: username, role:
 ```
 
 ### 3. Calculate Total Price from Products
+<!-- This take place on the frontend, isn't it? (Nando) -->
 This route calculates the total price of selected products from the database:
 
 POST http://localhost:3000/api/kasse/berechnen
@@ -136,24 +140,31 @@ If all products exist, the server responds with:
 }
 ```
 The gesamtbetrag will vary depending on the product prices stored in the database.
-### Create Order and Delivery Note
+
+### 4. Create Order and Delivery Note
 This route create the order and the delivery note in PDF, or a preview in HTML and send the info to the database:
-POST http://localhost:3000/api/lager/order
-POST http://localhost:3000/api/lager/order/delivery.pdf
-POST http://localhost:3000/api/lager/order/delivery.html
+POST http://localhost:3000/api/wareHouse/order
 
 In body the customerId and items list:
 ```
 {
-  "customerId": 1,
+  "idCustomer": 1,
   "items": [
     { "productId": 1, "quantity": 5 },
     { "productId": 2, "quantity": 2 }
-  ]
+  ],
+  "decTotal": 30.5
 }
 
 ```
-### Generate Monthly Invoice
+POST http://localhost:3000/api/wareHouse/order/delivery.pdf
+POST http://localhost:3000/api/wareHouse/order/delivery.html
+```
+{
+  "idOrder": 1
+}
+```
+### 5. Generate Monthly Invoice
 This route create the invoice in PDF, or a preview in HTML:
 POST http://localhost:3000/api/invoice/monthly.pdf or http://localhost:3000/api/invoice/monthly.html
 In body the items list:

@@ -1,148 +1,126 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server-Version:               10.4.32-MariaDB
--- OS:                           Win64
--- HeidiSQL Version:             12.11.0.7065
--- --------------------------------------------------------
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
 -- Create database
-CREATE DATABASE IF NOT EXISTS `green`
+CREATE DATABASE IF NOT EXISTS `Hofladen`
   /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
-USE `green`;
+USE `Hofladen`;
 
 -- Base tables without dependencies
-CREATE TABLE IF NOT EXISTS `t_majorcustomer` (
-  `CustomerID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Address` varchar(255) NOT NULL,
-  `Phone` varchar(20) NOT NULL,
-  `Email` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`CustomerID`),
-  UNIQUE KEY `Email` (`Email`)
+CREATE TABLE IF NOT EXISTS `t_MajorCustomer` (
+  `idCustomer` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `strAddress` VARCHAR(255) NOT NULL,
+  `strPhone` VARCHAR(30) NOT NULL,
+  `strEmail` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idCustomer`),
+  UNIQUE KEY `uq_MajorCustomer_Email` (`strEmail`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_person` (
-  `PersonID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `FirstName` varchar(50) NOT NULL,
-  `LastName` varchar(50) NOT NULL,
-  `DateOfBirth` date DEFAULT NULL,
-  `Phone` varchar(20) DEFAULT NULL,
-  `Address` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`PersonID`),
-  KEY `name_index` (`LastName`,`FirstName`)
+CREATE TABLE IF NOT EXISTS `t_Person` (
+  `idPerson` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `strFirstName` VARCHAR(50) NOT NULL,
+  `strLastName` VARCHAR(50) NOT NULL,
+  `strPhone` VARCHAR(30) DEFAULT NULL,
+  `strAddress` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`idPerson`),
+  KEY `idx_Person_Name` (`strLastName`,`strFirstName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_productgroup` (
-  `GroupID` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `GroupName` varchar(100) NOT NULL,
-  PRIMARY KEY (`GroupID`),
-  UNIQUE KEY `GroupName` (`GroupName`)
+CREATE TABLE IF NOT EXISTS `t_ProductGroup` (
+  `idGroup` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `strGroupName` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`idGroup`),
+  UNIQUE KEY `uq_ProductGroup_Name` (`strGroupName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_unit` (
-  `UnitID` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `Unit` varchar(50) NOT NULL,
-  PRIMARY KEY (`UnitID`),
-  UNIQUE KEY `Unit` (`Unit`)
+CREATE TABLE IF NOT EXISTS `t_Unit` (
+  `idUnit` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `strUnit` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`idUnit`),
+  UNIQUE KEY `uq_Unit_Name` (`strUnit`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_invoice` (
-  `InvoiceID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `InvoiceDate` date NOT NULL,
-  `IsPaid` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`InvoiceID`),
-  KEY `idx_invoice_date` (`InvoiceDate`)
+CREATE TABLE IF NOT EXISTS `t_Invoice` (
+  `idInvoice` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `dateInvoiceDate` DATE NOT NULL,
+  `boolIsPaid` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idInvoice`),
+  KEY `idx_Invoice_Date` (`dateInvoiceDate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_vat` (
-  `VATID` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `TaxRate` decimal(5,2) NOT NULL,
-  `ValidFrom` date NOT NULL,
-  `ValidUntil` date DEFAULT NULL,
-  PRIMARY KEY (`VATID`)
+CREATE TABLE IF NOT EXISTS `t_Vat` (
+  `idVAT` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `decTaxRate` DECIMAL(5,2) NOT NULL,
+  `dateValidFrom` DATE NOT NULL,
+  `dateValidUntil` DATE DEFAULT NULL,
+  PRIMARY KEY (`idVAT`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dependent tables
-CREATE TABLE IF NOT EXISTS `t_order` (
-  `OrderID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `OrderDate` date NOT NULL,
-  `CustomerID` int(10) unsigned NOT NULL,
-  `TotalWeight` int(11) DEFAULT NULL,
-  PRIMARY KEY (`OrderID`),
-  KEY `CustomerID` (`CustomerID`),
-  CONSTRAINT `t_order_ibfk_1` FOREIGN KEY (`CustomerID`) REFERENCES `t_majorcustomer` (`CustomerID`)
+CREATE TABLE IF NOT EXISTS `t_Order` (
+  `idOrder` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `dateOrderDate` DATE NOT NULL,
+  `fkCustomer` INT(10) UNSIGNED NOT NULL,
+  `decTotal` DECIMAL(10,2) DEFAULT NULL,
+  PRIMARY KEY (`idOrder`),
+  KEY `idx_Order_Customer` (`fkCustomer`),
+  CONSTRAINT `fk_Order_Customer` FOREIGN KEY (`fkCustomer`) REFERENCES `t_MajorCustomer` (`idCustomer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_deliverynote` (
-  `DeliveryNoteID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `DeliveryDate` date NOT NULL,
-  `ReceiptDate` date DEFAULT NULL,
-  `OrderID` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`DeliveryNoteID`),
-  KEY `OrderID` (`OrderID`),
-  KEY `idx_delivery_date` (`DeliveryDate`),
-  CONSTRAINT `t_deliverynote_ibfk_1` FOREIGN KEY (`OrderID`) REFERENCES `t_order` (`OrderID`)
+CREATE TABLE IF NOT EXISTS `t_DeliveryNote` (
+  `idDeliveryNote` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `dateDeliveryDate` DATE NOT NULL,
+  `dateReceiptDate` DATE DEFAULT NULL,
+  `fkOrder` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`idDeliveryNote`),
+  KEY `idx_DeliveryNote_Order` (`fkOrder`),
+  KEY `idx_DeliveryNote_Date` (`dateDeliveryDate`),
+  CONSTRAINT `fk_DeliveryNote_Order` FOREIGN KEY (`fkOrder`) REFERENCES `t_Order` (`idOrder`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_invoice_deliverynote` (
-  `LinkID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `InvoiceID` int(10) unsigned NOT NULL,
-  `DeliveryNoteID` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`LinkID`),
-  UNIQUE KEY `InvoiceID` (`InvoiceID`,`DeliveryNoteID`),
-  KEY `DeliveryNoteID` (`DeliveryNoteID`),
-  CONSTRAINT `t_invoice_deliverynote_ibfk_1` FOREIGN KEY (`InvoiceID`) REFERENCES `t_invoice` (`InvoiceID`),
-  CONSTRAINT `t_invoice_deliverynote_ibfk_2` FOREIGN KEY (`DeliveryNoteID`) REFERENCES `t_deliverynote` (`DeliveryNoteID`)
+CREATE TABLE IF NOT EXISTS `t_Invoice_DeliveryNote` (
+  `idInvoiceDeliveryNote` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fkInvoice` INT(10) UNSIGNED NOT NULL,
+  `fkDeliveryNote` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`idInvoiceDeliveryNote`),
+  UNIQUE KEY `uq_Invoice_DeliveryNote` (`fkInvoice`,`fkDeliveryNote`),
+  KEY `idx_InvoiceDeliveryNote_DeliveryNote` (`fkDeliveryNote`),
+  CONSTRAINT `fk_InvoiceDeliveryNote_Invoice` FOREIGN KEY (`fkInvoice`) REFERENCES `t_Invoice` (`idInvoice`),
+  CONSTRAINT `fk_InvoiceDeliveryNote_DeliveryNote` FOREIGN KEY (`fkDeliveryNote`) REFERENCES `t_DeliveryNote` (`idDeliveryNote`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_product` (
-  `ProductID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ProductName` varchar(255) NOT NULL,
-  `Price` decimal(10,2) NOT NULL,
-  `GroupID` smallint(5) unsigned DEFAULT NULL,
-  `UnitID` smallint(5) unsigned DEFAULT NULL,
-  `StockLevel` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`ProductID`),
-  KEY `GroupID` (`GroupID`),
-  KEY `UnitID` (`UnitID`),
-  CONSTRAINT `t_product_ibfk_1` FOREIGN KEY (`GroupID`) REFERENCES `t_productgroup` (`GroupID`),
-  CONSTRAINT `t_product_ibfk_2` FOREIGN KEY (`UnitID`) REFERENCES `t_unit` (`UnitID`)
+CREATE TABLE IF NOT EXISTS `t_Product` (
+  `idProduct` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `strProductName` VARCHAR(255) NOT NULL,
+  `decPrice` DECIMAL(10,2) NOT NULL,
+  `fkGroup` SMALLINT(5) UNSIGNED DEFAULT NULL,
+  `fkUnit` SMALLINT(5) UNSIGNED DEFAULT NULL,
+  `intStock` INT(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idProduct`),
+  KEY `idx_Product_Group` (`fkGroup`),
+  KEY `idx_Product_Unit` (`fkUnit`),
+  CONSTRAINT `fk_Product_Group` FOREIGN KEY (`fkGroup`) REFERENCES `t_ProductGroup` (`idGroup`),
+  CONSTRAINT `fk_Product_Unit` FOREIGN KEY (`fkUnit`) REFERENCES `t_Unit` (`idUnit`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_product_order` (
-  `ProductID` int(10) unsigned NOT NULL,
-  `OrderID` int(10) unsigned NOT NULL,
-  `Quantity` int(11) NOT NULL,
-  PRIMARY KEY (`ProductID`,`OrderID`),
-  KEY `OrderID` (`OrderID`),
-  CONSTRAINT `t_product_order_ibfk_1` FOREIGN KEY (`ProductID`) REFERENCES `t_product` (`ProductID`),
-  CONSTRAINT `t_product_order_ibfk_2` FOREIGN KEY (`OrderID`) REFERENCES `t_order` (`OrderID`)
+CREATE TABLE IF NOT EXISTS `t_Product_Order` (
+  `idProductOrder` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fkProduct` INT(10) UNSIGNED NOT NULL,
+  `fkOrder` INT(10) UNSIGNED NOT NULL,
+  `intQuantity` INT(11) NOT NULL,
+  PRIMARY KEY (`idProductOrder`),
+  KEY `idx_ProductOrder_Product_Order` (`fkProduct`,`fkOrder`),
+  CONSTRAINT `fk_ProductOrder_Product` FOREIGN KEY (`fkProduct`) REFERENCES `t_Product` (`idProduct`),
+  CONSTRAINT `fk_ProductOrder_Order` FOREIGN KEY (`fkOrder`) REFERENCES `t_Order` (`idOrder`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `t_user` (
-  `UserID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `PersonID` int(10) unsigned DEFAULT NULL,
-  `Username` varchar(30) NOT NULL,
-  `PasswordHash` char(60) NOT NULL,
-  `PIN` char(97) DEFAULT NULL,
-  `Role` varchar(50) NOT NULL,
-  PRIMARY KEY (`UserID`),
-  UNIQUE KEY `Username` (`Username`),
-  UNIQUE KEY `PersonID` (`PersonID`),
-  CONSTRAINT `t_user_ibfk_1` FOREIGN KEY (`PersonID`) REFERENCES `t_person` (`PersonID`) ON DELETE CASCADE
+
+CREATE TABLE IF NOT EXISTS `t_User` (
+  `idUser` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fkPerson` INT(10) UNSIGNED DEFAULT NULL,
+  `strUsername` VARCHAR(30) NOT NULL,
+  `strPasswordHash` CHAR(60) NOT NULL,
+  `strPIN` CHAR(64) DEFAULT NULL,
+  `strRole` ENUM('admin','cashier','warehouse') NOT NULL,
+  PRIMARY KEY (`idUser`),
+  UNIQUE KEY `uq_User_Username` (`strUsername`),
+  UNIQUE KEY `uq_User_Person` (`fkPerson`),
+  CONSTRAINT `fk_User_Person` FOREIGN KEY (`fkPerson`) REFERENCES `t_Person` (`idPerson`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Restore settings
-/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;

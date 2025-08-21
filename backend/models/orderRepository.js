@@ -1,169 +1,143 @@
-const pool = require("../db");
+const { query } = require("../db");
 
 // Create an order with products and a delivery note
-async function createOrderWithDelivery(customerId, items) {
-  const conn = await pool.getConnection();
-  try {
-    await conn.beginTransaction();
+async function createOrderWithDelivery(idCustomer, items, decTotal) {
+  // 1. Insert order
+  const total = parseFloat(decTotal);
+  const orderResult = await query(
+    `INSERT INTO t_Order (dateOrderDate, fkCustomer, decTotal) VALUES (CURDATE(), ?, ?)`,
+    [idCustomer, total]
+  );
+  const idOrder = Number(orderResult.insertId);
 
-    // 1. Insert order
-    const orderResult = await conn.query(
-      `INSERT INTO t_order (OrderDate, CustomerID) VALUES (CURDATE(), ?)`,
-      [customerId]
+  // 2. Add products to the order
+  for (const item of items) {
+    await query(
+      `INSERT INTO t_Product_Order (fkProduct, fkOrder, intQuantity) VALUES (?, ?, ?)`,
+      [item.productId, idOrder, item.quantity]
     );
-    const orderId = orderResult.insertId;
-
-    // 2. Add products to the order
-    for (const item of items) {
-      await conn.query(
-        `INSERT INTO t_product_order (ProductID, OrderID, Quantity) VALUES (?, ?, ?)`,
-        [item.productId, orderId, item.quantity]
-      );
-    }
-
-    // 3. Create a delivery note
-    const deliveryResult = await conn.query(
-      `INSERT INTO t_deliverynote (DeliveryDate, OrderID) VALUES (CURDATE(), ?)`,
-      [orderId]
-    );
-    const deliveryNoteId = deliveryResult.insertId;
-
-    await conn.commit();
-    return { orderId, deliveryNoteId };
-  } catch (err) {
-    await conn.rollback();
-    throw err;
-  } finally {
-    conn.release();
   }
+
+  // 3. Create a delivery note
+  const deliveryResult = await query(
+    `INSERT INTO t_DeliveryNote (dateDeliveryDate, fkOrder) VALUES (CURDATE(), ?)`,
+    [idOrder]
+  );
+  const idDeliveryNote = Number(deliveryResult.insertId);
+
+  return { idOrder, idDeliveryNote };
 }
 
 // Get all orders including products for a customer in a given month
-async function getOrdersByMonth(customerId, month) {
-  const conn = await pool.getConnection();
-  try {
-    const [year, mon] = month.split("-");
+async function getOrdersByMonth(idCustomer, month) {
+  const [year, mon] = month.split("-");
 
-    // Select delivery notes + orders + products
-    const orders = await conn.query(
-      `SELECT o.OrderID, o.OrderDate, dn.DeliveryNoteID, 
-              po.ProductID, po.Quantity
-       FROM t_order o
-       JOIN t_deliverynote dn ON dn.OrderID = o.OrderID
-       JOIN t_product_order po ON po.OrderID = o.OrderID
-       WHERE o.CustomerID = ? AND YEAR(o.OrderDate) = ? AND MONTH(o.OrderDate) = ?`,
-      [customerId, year, mon]
-    );
+  const orders = await query(
+    `SELECT o.idOrder, o.dateOrderDate, dn.idDeliveryNote, 
+            po.fkProduct, po.intQuantity
+     FROM t_Order o
+     JOIN t_DeliveryNote dn ON dn.fkOrder = o.idOrder
+     JOIN t_Product_Order po ON po.fkOrder = o.idOrder
+     WHERE o.fkCustomer = ? AND YEAR(o.dateOrderDate) = ? AND MONTH(o.dateOrderDate) = ?`,
+    [idCustomer, year, mon]
+  );
 
-    // Group data by order
-    const grouped = {};
-    orders.forEach(r => {
-      if (!grouped[r.OrderID]) {
-        grouped[r.OrderID] = {
-          orderId: r.OrderID,
-          orderDate: r.OrderDate,
-          deliveryNoteId: r.DeliveryNoteID,
-          items: [],
-        };
-      }
-      grouped[r.OrderID].items.push({
-        productId: r.ProductID,
-        quantity: r.Quantity,
-      });
+  // Group data by order
+  const grouped = {};
+  orders.forEach(r => {
+    if (!grouped[r.idOrder]) {
+      grouped[r.idOrder] = {
+        idOrder: r.idOrder,
+        orderDate: r.dateOrderDate,
+        idDeliveryNote: r.idDeliveryNote,
+        items: [],
+      };
+    }
+    grouped[r.idOrder].items.push({
+      productId: r.fkProduct,
+      quantity: r.intQuantity,
     });
+  });
 
-    return Object.values(grouped);
-  } finally {
-    conn.release();
-  }
+  return Object.values(grouped);
 }
 
 // Create an invoice and link it to delivery notes
-async function createInvoice(customerId, month, orders) {
-  const conn = await pool.getConnection();
-  try {
-    await conn.beginTransaction();
+async function createInvoice(orders) {
+  // Insert invoice
+  const invoiceResult = await query(
+    `INSERT INTO t_Invoice (dateInvoiceDate, boolIsPaid) VALUES (CURDATE(), 0)`
+  );
+  const idInvoice = Number(invoiceResult.insertId);
 
-    // Insert invoice
-    const invoiceResult = await conn.query(
-      `INSERT INTO t_invoice (InvoiceDate) VALUES (CURDATE())`
+  // Link delivery notes to the invoice
+  for (const order of orders) {
+    await query(
+      `INSERT INTO t_Invoice_DeliveryNote (fkInvoice, fkDeliveryNote) VALUES (?, ?)`,
+      [idInvoice, order.idDeliveryNote]
     );
-    const invoiceId = invoiceResult.insertId;
-
-    // Link delivery notes to the invoice
-    for (const order of orders) {
-      await conn.query(
-        `INSERT INTO t_invoice_deliverynote (InvoiceID, DeliveryNoteID) VALUES (?, ?)`,
-        [invoiceId, order.deliveryNoteId]
-      );
-    }
-
-    await conn.commit();
-    return invoiceId;
-  } catch (err) {
-    await conn.rollback();
-    throw err;
-  } finally {
-    conn.release();
   }
+
+  return idInvoice;
 }
 
 // Get customer data
-async function getCustomer(customerId) {
-  const conn = await pool.getConnection();
-  try {
-    const rows = await conn.query(
-      `SELECT * FROM t_majorcustomer WHERE CustomerID = ?`,
-      [customerId]
-    );
-    return rows[0];
-  } finally {
-    conn.release();
-  }
+async function getCustomer(idCustomer) {
+  const rows = await query(
+    `SELECT * FROM t_MajorCustomer WHERE idCustomer = ?`,
+    [idCustomer]
+  );
+  return rows[0];
 }
 
-async function getOrderById(orderId) {
-  const conn = await db.getConnection();
-  try {
-    // 1. Fetch order and customer info
-    const [order] = await conn.query(
-      `SELECT o.OrderID, o.OrderDate, o.CustomerID, c.Address AS customerAddress, c.Phone AS customerPhone, c.Email AS customerEmail
-       FROM t_order o
-       JOIN t_majorcustomer c ON o.CustomerID = c.CustomerID
-       WHERE o.OrderID = ?`,
-      [orderId]
-    );
+// Get one order with details
+async function getOrderById(idOrder) {
+  // 1. Fetch order and customer info
+  const rows = await query(
+    `SELECT o.idOrder, o.dateOrderDate, o.fkCustomer, 
+            c.strFirstName AS customerFirstName,
+            c.strLastName AS customerLastName,
+            c.strAddress AS customerAddress,
+            c.strPhone AS customerPhone,
+            c.strEmail AS customerEmail,
+            dn.dateDeliveryDate
+     FROM t_Order o
+     JOIN t_MajorCustomer c ON o.fkCustomer = c.idCustomer
+     LEFT JOIN t_DeliveryNote dn ON dn.fkOrder = o.idOrder
+     WHERE o.idOrder = ?`,
+    [idOrder]
+  );
 
-    if (!order) return null;
+  const order = rows[0];
+  if (!order) return null;
 
-    // 2. Fetch products for this order
-    const products = await conn.query(
-      `SELECT p.ProductID, p.Name AS productName, po.Quantity
-       FROM t_product_order po
-       JOIN t_product p ON po.ProductID = p.ProductID
-       WHERE po.OrderID = ?`,
-      [orderId]
-    );
+  // 2. Fetch products for this order
+  const products = await query(
+    `SELECT p.idProduct, p.strProductName AS productName, po.intQuantity, u.strUnitName AS unit
+     FROM t_Product_Order po
+     JOIN t_Product p ON po.fkProduct = p.idProduct
+     LEFT JOIN t_Unit u ON p.fkUnit = u.idUnit
+     WHERE po.fkOrder = ?`,
+    [idOrder]
+  );
 
-    // 3. Format the result
-    return {
-      orderId: order.OrderID,
-      orderDate: order.OrderDate,
-      customer: {
-        name: order.customerAddress, // adjust if you store actual customer name
-        address: order.customerAddress,
-        phone: order.customerPhone,
-        email: order.customerEmail
-      },
-      items: products.map(p => ({
-        productId: p.ProductID,
-        productName: p.productName,
-        quantity: p.Quantity
-      }))
-    };
-  } finally {
-    conn.release();
-  }
+  return {
+    idOrder: order.idOrder,
+    orderDate: order.dateOrderDate,
+    deliveryDate: order.dateDeliveryDate,
+    customer: {
+      name: `${order.customerFirstName} ${order.customerLastName}`,
+      address: order.customerAddress,
+      phone: order.customerPhone,
+      email: order.customerEmail
+    },
+    items: products.map(p => ({
+      productId: p.idProduct,
+      productName: p.productName,
+      quantity: p.intQuantity,
+      unit: p.unit
+    }))
+  };
 }
 
 module.exports = {
