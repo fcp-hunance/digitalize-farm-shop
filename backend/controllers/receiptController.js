@@ -12,8 +12,8 @@ async function createReceipt(req, res) {
       data: {
         invoiceNumber: "BON-" + Date.now(),
         date: new Date().toLocaleString("de-DE"),
-        seller: { name: "Beispiel GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
-        taxRate: 0.19,
+        seller: { name: "Hofladen Hahn", address: "Dorfplatz 5, 67890 Kleinstadt", vatId: "DE123456789" },
+        taxRate: 0.07,
         currency: "€",
         notes: "Steuerfreie Rückgabe innerhalb von 14 Tagen mit Bon."
       },
@@ -41,8 +41,8 @@ async function previewReceipt(req, res) {
       data: {
         invoiceNumber: "BON-" + Date.now(),
         date: new Date().toLocaleString("de-DE"),
-        seller: { name: "Beispiel GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
-        taxRate: 0.19,
+        seller: { name: "Hofladen Hahn", address: "Dorfplatz 5, 67890 Kleinstadt", vatId: "DE123456789" },
+        taxRate: 0.7,
         currency: "€",
         notes: "Steuerfreie Rückgabe innerhalb von 14 Tagen mit Bon."
       },

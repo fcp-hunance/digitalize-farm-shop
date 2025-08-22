@@ -9,7 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useNavigate } from "react-router-dom";   // ✅ import für Navigation
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -29,8 +29,17 @@ const Dashboard = () => {
 
   // Logout-Funktion
   const handleLogout = () => {
-    // evtl. später: Token löschen, Backend-Logout
-    navigate("/"); // zurück zur Login-Seite
+    navigate("/");
+  };
+  
+  // Neue Funktion für die Navigation im Dropdown
+  const handleNavigation = (event) => {
+    const value = event.target.value;
+    if (value === "Mitarbeiter") {
+      navigate("/mitarbeiter");
+    } else if (value === "Lagerverwaltung") {
+      navigate("/lager");
+    }
   };
 
   return (
@@ -41,20 +50,31 @@ const Dashboard = () => {
         <div className="header-right">
           <div className="user-info">👤 Benutzer: Admin</div>
           <button className="logout-btn" onClick={handleLogout}>
-             Logout
+            Logout
           </button>
         </div>
       </header>
 
-      {/* Filter */}
-      <div className="filter-section">
-        <label>Zeitraum:</label>
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option>Tag</option>
-          <option>Woche</option>
-          <option>Monat</option>
-          <option>Jahr</option>
-        </select>
+      {/* Filter und neues Dropdown-Menü */}
+      <div className="filter-and-nav-section">
+        <div className="filter-section">
+          <label>Zeitraum: </label>
+          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option>Tag</option>
+            <option>Woche</option>
+            <option>Monat</option>
+            <option>Jahr</option>
+          </select>
+        </div>
+
+        {/* Neues Dropdown-Menü */}
+        <div className="navigation-section">
+          <select onChange={handleNavigation} defaultValue="">
+            <option value="" disabled hidden>Verwalten</option>
+            <option value="Mitarbeiter">Mitarbeiter verwalten</option>
+            <option value="Lagerverwaltung">Lagerverwaltung</option>
+          </select>
+        </div>
       </div>
 
       {/* Statistik-Karten */}
@@ -94,6 +114,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-
-

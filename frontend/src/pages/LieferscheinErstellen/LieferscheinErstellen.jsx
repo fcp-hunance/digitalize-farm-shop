@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Kassier.css";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import "../Kassier/Kassier.css";
+import "./LieferscheinErstellen.css";
 
-const Kassier = ({ warenkorb, setWarenkorb }) => {
+const LieferscheinErstellen = () => {
   const navigate = useNavigate();
+  const { kundenId } = useParams();
 
   const produkte = [
     { id: 1, name: "🍎 Äpfel", preis: 2.5, einheit: "kg" },
@@ -20,9 +22,13 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
     { id: 12, name: "🍓 Erdbeeren", preis: 4.5, einheit: "kg" },
   ];
 
+  const [rechnungItems, setRechnungItems] = useState([]);
   const [modalProdukt, setModalProdukt] = useState(null);
   const [menge, setMenge] = useState("");
   const [rabatt, setRabatt] = useState("");
+  
+  // Neuer State für den Rechnungs-Rabatt
+  const [rechnungsRabatt, setRechnungsRabatt] = useState(0);
 
   const berechnePreis = (produkt, menge) => {
     if (produkt.einheit === "kg") {
@@ -50,38 +56,51 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
       preis: gesamtpreis.toFixed(2),
     };
 
-    setWarenkorb([...warenkorb, neuerArtikel]);
+    setRechnungItems([...rechnungItems, neuerArtikel]);
     setModalProdukt(null);
     setMenge("");
     setRabatt("");
   };
 
   const zeilenStorno = (index) => {
-    const neuerWarenkorb = [...warenkorb];
+    const neuerWarenkorb = [...rechnungItems];
     neuerWarenkorb.splice(index, 1);
-    setWarenkorb(neuerWarenkorb);
+    setRechnungItems(neuerWarenkorb);
   };
 
   const komplettStorno = () => {
-    setWarenkorb([]);
+    setRechnungItems([]);
+    setRechnungsRabatt(0); // Rabatt auch zurücksetzen
   };
 
-  const gesamtsumme = warenkorb
-    .reduce((sum, item) => sum + parseFloat(item.preis), 0)
-    .toFixed(2);
+  // Gesamtbetrag der Artikel vor dem Rabatt
+  const gesamtsummeArtikel = rechnungItems
+    .reduce((sum, item) => sum + parseFloat(item.preis), 0);
+
+  // Berechnung des endgültigen Gesamtbetrags nach Abzug des manuellen Rabatts
+  const gesamtsummeNachRabatt = Math.max(0, gesamtsummeArtikel - rechnungsRabatt).toFixed(2);
 
   const handleLogout = () => {
-    setWarenkorb([]);
     navigate("/");
+  };
+  
+  const handleRechnungDrucken = () => {
+      alert("Rechnung wird gedruckt und als PDF exportiert.");
+      komplettStorno();
+      navigate('/lager');
   };
 
   return (
     <div className="kassier-container">
       <div className="header-bar">
-        <h1>🛒 Biohofladen Schlarb</h1>
-        <button className="logout-button" onClick={handleLogout}>
-          🚪 Logout
+        <h1>🧾 Lieferschein erstellen</h1>
+        <button className="logout-btn" onClick={handleLogout}>
+          🚪 Abmelden
         </button>
+      </div>
+
+      <div className="delivery-info">
+        <h3>Kunden-ID: {kundenId}</h3>
       </div>
 
       <div className="produkt-grid">
@@ -97,9 +116,9 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
       </div>
 
       <div className="warenkorb">
-        <h2>Verkauf</h2>
+        <h2>Rechnungspositionen</h2>
         <ul>
-          {warenkorb.map((item, index) => (
+          {rechnungItems.map((item, index) => (
             <li key={index}>
               {item.name} - {item.menge} {item.einheit} - Rabatt: {item.rabatt} € -{" "}
               {item.preis} €
@@ -113,17 +132,39 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
           ))}
         </ul>
 
-        <h3>Gesamtsumme: {gesamtsumme} €</h3>
+        {/* Neuer Bereich für den Gesamtbetrag und Rabatt */}
+        <div className="summen-section">
+          <div className="summe-zeile">
+            <span>Gesamtsumme:</span>
+            <span>{gesamtsummeArtikel.toFixed(2)} €</span>
+          </div>
+          <div className="rabatt-zeile">
+            <label htmlFor="rechnungs-rabatt">Rabatt in €:</label>
+            <input
+              id="rechnungs-rabatt"
+              type="number"
+              step="0.01"
+              value={rechnungsRabatt}
+              onChange={(e) => setRechnungsRabatt(Number(e.target.value))}
+            />
+          </div>
+          <div className="summe-zeile">
+            <span>** Zu zahlender Betrag: </span>
+            <span> ** {gesamtsummeNachRabatt} € ** </span>
+          </div>
+        </div>
 
-        <button className="komplettstorno-button" onClick={komplettStorno}>
-          🗑 Storno
-        </button>
-        <button
-          className="zahlen-button"
-          onClick={() => navigate("/payment")}
-        >
-          💳 Bezahlen
-        </button>
+        <div className="rechnung-buttons">
+          <button className="komplettstorno-button" onClick={komplettStorno}>
+            🗑 Storno
+          </button>
+          <button className="print-button" onClick={handleRechnungDrucken}>
+            🖨️ Rechnung drucken
+          </button>
+          <button className="back-button" onClick={() => navigate("/lager")}>
+            🔙 Zurück
+          </button>
+        </div>
       </div>
 
       {/* Modal */}
@@ -158,4 +199,4 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
   );
 };
 
-export default Kassier;
+export default LieferscheinErstellen;

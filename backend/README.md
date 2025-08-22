@@ -152,8 +152,8 @@ In body the customerId and items list:
 {
   "idCustomer": 1,
   "items": [
-    { "productId": 1, "quantity": 5 },
-    { "productId": 2, "quantity": 2 }
+    { "idProduct": 1, "quantity": 5 },
+    { "idProduct": 2, "quantity": 2 }
   ],
   "decTotal": 30.5
 }
@@ -174,6 +174,19 @@ In body the items list:
 {
   "customerId": 1,
   "month": "2025-08"
+}
+```
+### 6 Create Receipt
+This route create the invoice in PDF, or a preview in HTML:
+POST http://localhost:3000/api/receipt/receipt.pdf or http://localhost:3000/api/receipt/receipt.html
+In body the items list:
+```
+{
+  "items": [
+    { "idProduct": 1, "quantity": 2 },
+    { "idProduct": 4, "quantity": 1 },
+    { "idProduct": 8, "quantity": 5 }
+  ]
 }
 ```
 ## Notes

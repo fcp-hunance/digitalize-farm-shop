@@ -15,9 +15,9 @@ async function createInvoice(req, res) {
         invoiceNumber: "INV-" + Date.now(),
         date: new Date().toLocaleDateString("de-DE"),
         deliveryDate: new Date().toLocaleDateString("de-DE"),
-        seller: { name: "Hofladen Müller GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
+        seller: { name: "Hofladen Hahn", address: "Dorfplatz 5, 67890 Kleinstadt", vatId: "DE123456789" },
         buyer: { name: buyer.name, address: buyer.address },
-        taxRate: 0.19,
+        taxRate: 0.07,
         currency: "€",
         notes: "Vielen Dank für Ihren Einkauf!"
       },
@@ -47,9 +47,9 @@ async function previewInvoice(req, res) {
         invoiceNumber: "INV-" + Date.now(),
         date: new Date().toLocaleDateString("de-DE"),
         deliveryDate: new Date().toLocaleDateString("de-DE"),
-        seller: { name: "Hofladen Müller GmbH", address: "Musterstr. 1, Berlin", vatId: "DE123456789" },
+        seller: { name: "Hofladen Hahn", address: "Dorfplatz 5, 67890 Kleinstadt", vatId: "DE123456789" },
         buyer: { name: buyer.name, address: buyer.address },
-        taxRate: 0.19,
+        taxRate: 0.07,
         currency: "€",
         notes: "Vielen Dank für Ihren Einkauf!"
       },
