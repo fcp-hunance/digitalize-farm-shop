@@ -73,7 +73,9 @@ POST http://localhost:3000/api/auth/register
 ```json
 {
   "username": "marten",
-  "password": "meinPasswort123"
+  "password": "meinPasswort123",
+  "pin": "1234",
+  "role": "Admin"
 }
 ```
 The password will be hashed and stored in the database along with a unique ID and the username.
