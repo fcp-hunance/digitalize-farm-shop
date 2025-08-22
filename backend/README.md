@@ -177,16 +177,18 @@ In body the items list:
 }
 ```
 ### 6 Create Receipt
-This route create the invoice in PDF, or a preview in HTML:
+This route create the receipt in PDF, or a preview in HTML, and save the data in the DB:
 POST http://localhost:3000/api/receipt/receipt.pdf or http://localhost:3000/api/receipt/receipt.html
 In body the items list:
 ```
 {
-  "items": [
-    { "idProduct": 1, "quantity": 2 },
-    { "idProduct": 4, "quantity": 1 },
-    { "idProduct": 8, "quantity": 5 }
-  ]
+    "idUser": 2,
+    "items": [
+        { "idProduct": 1, "quantity": 2 },
+        { "idProduct": 4, "quantity": 1 },
+        { "idProduct": 8, "quantity": 0.5 }
+    ],
+    "total": 20
 }
 ```
 ## Notes
