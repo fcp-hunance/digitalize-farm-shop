@@ -219,14 +219,14 @@ curl http://localhost:3000/api/warehouse/1
 Update stock (add 10):
 
 bash
-```json
+```bash
 curl -X POST http://localhost:3000/api/warehouse/update \
   -H "Content-Type: application/json" \
   -d '{"productID": 1, "menge": 10, "richtung": "eingang"}'
 Update stock (remove 5):
 ```
 bash
-```json
+```bash
 curl -X POST http://localhost:3000/api/warehouse/update \
   -H "Content-Type: application/json" \
   -d '{"productID": 1, "menge": 5, "richtung": "ausgang"}'
@@ -254,12 +254,11 @@ In body the items list:
   "month": "2025-08"
 }
 ```
-```json
 ### 6 Create Receipt
 This route create the receipt in PDF, or a preview in HTML, and save the data in the DB:
 POST http://localhost:3000/api/receipt/receipt.pdf or http://localhost:3000/api/receipt/receipt.html
 In body the items list:
-```
+
 ```json
 {
     "idUser": 2,
