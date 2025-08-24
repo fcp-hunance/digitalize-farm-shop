@@ -20,6 +20,7 @@ app.use('/api/receipt', receiptRoute);
 app.use('/api/test', testRoute);
 
 
+
 const PORT = process.env.PORTserver || 3000;
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
