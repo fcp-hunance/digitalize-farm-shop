@@ -88,8 +88,43 @@ async function resetUserPin(req, res) {
   }
 }
 
+// adminController.js - füge diese Funktion hinzu
+async function deleteUser(req, res) {
+  try {
+    const { username } = req.body;
+
+    // Admin-Berechtigung prüfen
+    //if (req.user.role !== 'admin') {
+    //  return res.status(403).json({ error: 'Zugriff verweigert' });
+    //}
+
+    if (!username) {
+      return res.status(400).json({ error: 'Benutzername erforderlich' });
+    }
+
+    // Benutzer existenz prüfen
+    const user = await userModel.getUserByUsername(username);
+    if (!user) {
+      return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+    }
+
+    // Benutzer löschen
+    await userModel.deleteUserByUsername(username);
+
+    res.json({ 
+      success: true, 
+      message: 'Benutzer erfolgreich gelöscht',
+      username: username 
+    });
+  } catch (error) {
+    console.error('Fehler beim Löschen des Benutzers:', error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+}
+
 module.exports = {
   getAllUsers,
   resetUserPassword,
-  resetUserPin
+  resetUserPin,
+  deleteUser
 };

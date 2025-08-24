@@ -346,6 +346,25 @@ Error Responses
 }
 ```
 
+### DELETE `/admin/delete-user`
+Delete user by username.
+
+**Request:**
+```json
+{
+  "username": "user_to_delete"
+}
+```
+Response:
+
+```json
+{
+  "success": true,
+  "message": "User deleted successfully",
+  "username": "user_to_delete"
+}
+```
+
 
 ## Notes
 Should we put all the DB Logic in a File? Maybe could Cantez complete this with all needed SQL Queries.

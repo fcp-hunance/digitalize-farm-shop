@@ -53,11 +53,21 @@ async function updateUserPin(username, hashedPin) {
   return result;
 }
 
+
+async function deleteUserByUsername(username) {
+  const result = await db.query(
+    'DELETE FROM t_User WHERE strUsername = ?',
+    [username]
+  );
+  return result;
+}
+
 module.exports = {
   createUser,
   getUserByUsername,
   findByUsername,
   getAllUsers,
   updateUserPassword,
-  updateUserPin
+  updateUserPin,
+  deleteUserByUsername
 };
