@@ -215,8 +215,10 @@ Example Usage
 Get stock:
 
 bash
+```bash
 curl http://localhost:3000/api/warehouse/1
 Update stock (add 10):
+```
 
 bash
 ```bash
