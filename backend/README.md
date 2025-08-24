@@ -300,7 +300,7 @@ Response:
   "username": "cashier1"
 }
 ```
-POST /admin/reset-pin
+### POST /admin/reset-pin
 Reset user PIN.
 
 Request:
