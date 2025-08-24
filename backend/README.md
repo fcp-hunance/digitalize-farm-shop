@@ -234,7 +234,7 @@ curl -X POST http://localhost:3000/api/warehouse/update \
   -d '{"productID": 1, "menge": 5, "richtung": "ausgang"}'
 ```
 
-
+### Delivery
 ```
 POST http://localhost:3000/api/wareHouse/order/delivery.pdf
 POST http://localhost:3000/api/wareHouse/order/delivery.html
