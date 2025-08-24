@@ -153,7 +153,7 @@ Error Responses:
 
 ```json
 {"error": "Artikel nicht gefunden"}
-```jon
+```json
 500 Internal Server Error - Server error
 
 ```json
