@@ -272,6 +272,81 @@ In body the items list:
     "total": 20
 }
 ```
+
+# Admin API Documentation
+
+## Base URL
+`http://localhost:3000/api/admin`
+
+## Endpoints
+
+### POST `/admin/reset-password`
+Reset user password.
+
+**Request:**
+```json
+{
+  "username": "cashier1",
+  "newPassword": "new_password_123"
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Password reset successfully",
+  "username": "cashier1"
+}
+```
+POST /admin/reset-pin
+Reset user PIN.
+
+Request:
+
+```json
+{
+  "username": "cashier1",
+  "newPin": "4321"
+}
+```
+Response:
+
+```json
+{
+  "success": true,
+  "message": "PIN reset successfully",
+  "username": "cashier1"
+}
+```
+Error Responses
+400 Bad Request
+```json
+{
+  "error": "Username and new password required"
+}
+```
+403 Forbidden
+```json
+{
+  "error": "Access denied"
+}
+```
+404 Not Found
+```json
+{
+  "error": "User not found"
+}
+```
+500 Internal Server Error
+```json
+{
+  "error": "Internal server error"
+}
+```
+
+
 ## Notes
 Should we put all the DB Logic in a File? Maybe could Cantez complete this with all needed SQL Queries.
 ## Testing

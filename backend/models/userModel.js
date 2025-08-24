@@ -2,10 +2,8 @@ const db = require('../db');
 
 async function findByUsername(name) {
   const rows = await db.query('SELECT * FROM t_User WHERE strUsername = ?', [name]);
-  return rows[0]; // erste Zeile zurückgeben
+  return rows[0];
 }
-
-
 
 async function createUser(name, hashedPassword, hashedPin, role) {
   const result = await db.query(
@@ -23,10 +21,43 @@ async function getUserByUsername(name) {
   return rows[0];
 }
 
+// NEUE FUNKTIONEN FÜR ADMIN
+async function getAllUsers() {
+  const rows = await db.query(
+    'SELECT idUser, strUsername, strRole FROM t_User WHERE strRole != "admin"'
+  );
+  return rows;
+}
+
+async function getUserByUsername(name) {
+  const rows = await db.query(
+    'SELECT idUser, strUsername, strRole FROM t_User WHERE strUsername = ?',
+    [name]
+  );
+  return rows[0];
+}
+
+async function updateUserPassword(username, hashedPassword) {
+  const result = await db.query(
+    'UPDATE t_User SET strPasswordHash = ? WHERE strUsername = ?',
+    [hashedPassword, username]
+  );
+  return result;
+}
+
+async function updateUserPin(username, hashedPin) {
+  const result = await db.query(
+    'UPDATE t_User SET strPIN = ? WHERE strUsername = ?',
+    [hashedPin, username]
+  );
+  return result;
+}
+
 module.exports = {
   createUser,
   getUserByUsername,
   findByUsername,
+  getAllUsers,
+  updateUserPassword,
+  updateUserPin
 };
-
-
