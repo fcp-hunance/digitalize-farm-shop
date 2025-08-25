@@ -75,7 +75,7 @@ const ManageEmployees = () => {
                 🔙 Zurück
             </button>
             <button className="logout-btn" onClick={handleLogout}>
-                🚪 Abmelden
+                🚪 Logout
             </button>
         </div>
       </header>
@@ -87,21 +87,21 @@ const ManageEmployees = () => {
             placeholder="Name des Mitarbeiters"
             value={newEmployeeName}
             onChange={(e) => setNewEmployeeName(e.target.value)}
-            autocomplete="new-password" 
+            autoComplete="new-password" 
             />
             <input
             type="password"
             placeholder="PIN (4-stellig)"
             value={newEmployeePin}
             onChange={(e) => setNewEmployeePin(e.target.value)}
-            autocomplete="new-password" 
+            autoComplete="new-password" 
             />
             <input
             type="password"
             placeholder="Passwort"
             value={newEmployeePassword}
             onChange={(e) => setNewEmployeePassword(e.target.value)}
-            autocomplete="new-password" 
+            autoComplete="new-password" 
         />
         <select value={newEmployeeRole} onChange={(e) => setNewEmployeeRole(e.target.value)}>
           <option value="Admin">Admin</option>
