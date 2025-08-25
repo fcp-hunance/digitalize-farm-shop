@@ -31,11 +31,48 @@ const Payment = ({ warenkorb, setWarenkorb }) => {
     setShowModal(true);
   };
 
-  const handleKassenbonDrucken = () => {
-    // ✅ HIER IST DIE ÄNDERUNG: Weiterleitung zur Kassier-Seite
-    setShowModal(false);
-    setWarenkorb([]);
-    navigate("/kassier");
+  const handleKassenbonDrucken = async () => {
+    try {
+      // Build items array
+      const items = warenkorb.map((item) => ({
+        idProduct: item.id, // make sure your warenkorb items store `id`
+        quantity:
+          item.einheit === "kg" ? item.menge / 1000 : item.menge, // grams -> kg
+      }));
+
+      const body = {
+        idUser: 2, // replace with real user id if needed
+        items,
+        total: parseFloat(zuZahlenderBetrag),
+      };
+
+      const response = await fetch(
+        "http://localhost:3000/api/receipt/receipt.html",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Fehler beim Erstellen des Kassenbons");
+      }
+
+      // Optional: get response if needed
+      const data = await response.json();
+      console.log("Kassenbon erstellt:", data);
+
+      // Clear modal, Warenkorb and navigate back
+      setShowModal(false);
+      setWarenkorb([]);
+      navigate("/kassier");
+    } catch (err) {
+      console.error(err);
+      alert("Fehler beim Erstellen des Kassenbons");
+    }
   };
 
   // Inline Modal-Komponente

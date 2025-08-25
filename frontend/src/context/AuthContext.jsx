@@ -17,9 +17,9 @@ export const AuthProvider = ({ children }) => {
   const timeoutRef = useRef(null);
 
   const [employees, setEmployees] = useState([
-    { id: 1, name: "Max Mustermann", pin: "1234", password: "password123", role: "Admin" },
-    { id: 2, name: "Erika Mustermann", pin: "5678", password: "password123", role: "Kassier" },
-    { id: 3, name: "John Doe", pin: "9012", password: "password123", role: "Lagerist" },
+    { id: 1, name: "Max", pin: "1234", password: "1234", role: "Admin" },
+    { id: 2, name: "Erika", pin: "5678", password: "1234", role: "Kassier" },
+    { id: 3, name: "John", pin: "9012", password: "1234", role: "Lagerist" },
   ]);
 
   const [isLocked, setIsLocked] = useState(false);
