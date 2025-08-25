@@ -10,6 +10,7 @@ const authRoute = require('./routes/auth');
 const invoiceRoute = require('./routes/invoice');
 const receiptRoute = require('./routes/receipt');
 const testRoute = require('./routes/test');
+const adminRoute = require('./routes/admin');
 app.use(express.json()); // JSON-Body parsen
 
 app.use('/api/cashDesk', cashDeskRoute);
@@ -18,6 +19,8 @@ app.use('/api/auth', authRoute);
 app.use('/api/invoice', invoiceRoute);
 app.use('/api/receipt', receiptRoute);
 app.use('/api/test', testRoute);
+app.use('/api/admin', adminRoute);
+
 
 
 const PORT = process.env.PORTserver || 3000;

@@ -73,7 +73,9 @@ POST http://localhost:3000/api/auth/register
 ```json
 {
   "username": "marten",
-  "password": "meinPasswort123"
+  "password": "meinPasswort123",
+  "pin": "1234",
+  "role": "Admin"
 }
 ```
 The password will be hashed and stored in the database along with a unique ID and the username.
@@ -117,63 +119,253 @@ Then will be sended this token to the client.
 ```
 res.status(200).json({ message: 'Login successful', token, user: username, role: userRole });
 ```
+# Warehouse API Documentation
 
-### 3. Calculate Total Price from Products
-<!-- This take place on the frontend, isn't it? (Nando) -->
-This route calculates the total price of selected products from the database:
+## Base URL
+`http://localhost:3000/api/warehouse`
 
-POST http://localhost:3000/api/kasse/berechnen
+## Endpoints
 
-Request body example:
+### 1. Get Product Stock
+**GET** `/:artikel_id`
+
+Retrieves the current stock level for a specific product.
+
+**Path Parameter:**
+- `artikel_id` (integer) - Product ID
+
+**Response:**
 ```json
 {
-  "positionen": [
-    { "id": 1, "menge": 2 },
-    { "id": 2, "menge": 1 }
-  ]
+  "artikel_id": 1,
+  "bestand": 120
 }
+``` 
+
+Error Responses:
+
+400 Bad Request - Invalid product ID
+
+```json
+{"error": "Ungültige Artikel-ID"}
 ```
-If all products exist, the server responds with:
+404 Not Found - Product not found
+
+```json
+{"error": "Artikel nicht gefunden"}
+```
+500 Internal Server Error - Server error
+
+```json
+{"error": "Interner Serverfehler"}
+```
+2. Update Product Stock
+POST /update
+
+Updates the stock level for a product (increase or decrease).
+
+Request Body:
+
 ```json
 {
-  "gesamtbetrag": 7.2
+  "productID": 1,
+  "menge": 10,
+  "richtung": "eingang"
 }
 ```
-The gesamtbetrag will vary depending on the product prices stored in the database.
+Fields:
 
-### 4. Create Order and Delivery Note
-This route create the order and the delivery note in PDF, or a preview in HTML and send the info to the database:
-POST http://localhost:3000/api/wareHouse/order
+productID (integer) - Product ID to update
 
-In body the customerId and items list:
-```
+menge (integer) - Quantity to add/remove
+
+richtung (string) - Direction: "eingang" (incoming) or "ausgang" (outgoing)
+
+Success Response:
+
+```json
 {
-  "idCustomer": 1,
-  "items": [
-    { "productId": 1, "quantity": 5 },
-    { "productId": 2, "quantity": 2 }
-  ],
-  "decTotal": 30.5
+  "message": "Stock updated successfully",
+  "newStock": 130
 }
+```
+Error Responses:
 
+400 Bad Request - Invalid parameters
+
+```json
+{"error": "Ungültige Richtung"}
+```
+400 Bad Request - Negative stock not allowed
+
+```json
+{"error": "Stock cannot be negative"}
+```
+404 Not Found - Product not found
+
+```json
+{"error": "Artikel nicht gefunden"}
+```
+500 Internal Server Error - Server error
+
+```json
+{"error": "Interner Serverfehler"}
+```
+Example Usage
+Get stock:
+
+bash
+```bash
+curl http://localhost:3000/api/warehouse/1
+Update stock (add 10):
+```
+
+bash
+```bash
+curl -X POST http://localhost:3000/api/warehouse/update \
+  -H "Content-Type: application/json" \
+  -d '{"productID": 1, "menge": 10, "richtung": "eingang"}'
+Update stock (remove 5):
+```
+bash
+```bash
+curl -X POST http://localhost:3000/api/warehouse/update \
+  -H "Content-Type: application/json" \
+  -d '{"productID": 1, "menge": 5, "richtung": "ausgang"}'
+```
+
+### Delivery
 ```
 POST http://localhost:3000/api/wareHouse/order/delivery.pdf
 POST http://localhost:3000/api/wareHouse/order/delivery.html
 ```
+```json
 {
   "idOrder": 1
 }
+```
 ```
 ### 5. Generate Monthly Invoice
 This route create the invoice in PDF, or a preview in HTML:
 POST http://localhost:3000/api/invoice/monthly.pdf or http://localhost:3000/api/invoice/monthly.html
 In body the items list:
 ```
+```json
 {
   "customerId": 1,
   "month": "2025-08"
 }
 ```
+### 6 Create Receipt
+This route create the receipt in PDF, or a preview in HTML, and save the data in the DB:
+POST http://localhost:3000/api/receipt/receipt.pdf or http://localhost:3000/api/receipt/receipt.html
+In body the items list:
+
+```json
+{
+    "idUser": 2,
+    "items": [
+        { "idProduct": 1, "quantity": 2 },
+        { "idProduct": 4, "quantity": 1 },
+        { "idProduct": 8, "quantity": 0.5 }
+    ],
+    "total": 20
+}
+```
+
+# Admin API Documentation
+
+## Base URL
+`http://localhost:3000/api/admin`
+
+## Endpoints
+
+### POST `/admin/reset-password`
+Reset user password.
+
+**Request:**
+```json
+{
+  "username": "cashier1",
+  "newPassword": "new_password_123"
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Password reset successfully",
+  "username": "cashier1"
+}
+```
+### POST /admin/reset-pin
+Reset user PIN.
+
+Request:
+
+```json
+{
+  "username": "cashier1",
+  "newPin": "4321"
+}
+```
+Response:
+
+```json
+{
+  "success": true,
+  "message": "PIN reset successfully",
+  "username": "cashier1"
+}
+```
+Error Responses
+400 Bad Request
+```json
+{
+  "error": "Username and new password required"
+}
+```
+403 Forbidden
+```json
+{
+  "error": "Access denied"
+}
+```
+404 Not Found
+```json
+{
+  "error": "User not found"
+}
+```
+500 Internal Server Error
+```json
+{
+  "error": "Internal server error"
+}
+```
+
+### DELETE `/admin/delete-user`
+Delete user by username.
+
+**Request:**
+```json
+{
+  "username": "user_to_delete"
+}
+```
+Response:
+
+```json
+{
+  "success": true,
+  "message": "User deleted successfully",
+  "username": "user_to_delete"
+}
+```
+
+
 ## Notes
 Should we put all the DB Logic in a File? Maybe could Cantez complete this with all needed SQL Queries.
 ## Testing

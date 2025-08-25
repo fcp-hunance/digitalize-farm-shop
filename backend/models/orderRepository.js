@@ -14,7 +14,7 @@ async function createOrderWithDelivery(idCustomer, items, decTotal) {
   for (const item of items) {
     await query(
       `INSERT INTO t_Product_Order (fkProduct, fkOrder, intQuantity) VALUES (?, ?, ?)`,
-      [item.productId, idOrder, item.quantity]
+      [item.idProduct, idOrder, item.quantity]
     );
   }
 
@@ -95,8 +95,7 @@ async function getOrderById(idOrder) {
   // 1. Fetch order and customer info
   const rows = await query(
     `SELECT o.idOrder, o.dateOrderDate, o.fkCustomer, 
-            c.strFirstName AS customerFirstName,
-            c.strLastName AS customerLastName,
+            c.strName AS customerName,
             c.strAddress AS customerAddress,
             c.strPhone AS customerPhone,
             c.strEmail AS customerEmail,
@@ -113,7 +112,7 @@ async function getOrderById(idOrder) {
 
   // 2. Fetch products for this order
   const products = await query(
-    `SELECT p.idProduct, p.strProductName AS productName, po.intQuantity, u.strUnitName AS unit
+    `SELECT p.idProduct, p.strProductName AS productName, po.intQuantity, u.strUnit AS unit
      FROM t_Product_Order po
      JOIN t_Product p ON po.fkProduct = p.idProduct
      LEFT JOIN t_Unit u ON p.fkUnit = u.idUnit
@@ -123,10 +122,10 @@ async function getOrderById(idOrder) {
 
   return {
     idOrder: order.idOrder,
-    orderDate: order.dateOrderDate,
-    deliveryDate: order.dateDeliveryDate,
+    orderDate: formatDate(order.dateOrderDate),
+    deliveryDate: formatDate(order.dateDeliveryDate),
     customer: {
-      name: `${order.customerFirstName} ${order.customerLastName}`,
+      name: order.customerName,
       address: order.customerAddress,
       phone: order.customerPhone,
       email: order.customerEmail
@@ -138,6 +137,15 @@ async function getOrderById(idOrder) {
       unit: p.unit
     }))
   };
+}
+
+function formatDate(dateString) {
+  if (!dateString) return null;
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
 }
 
 module.exports = {

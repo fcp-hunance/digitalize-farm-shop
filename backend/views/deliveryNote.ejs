@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Delivery Note - <%= order.orderId %></title>
+  <title>Lieferschein - <%= order.orderId %></title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -43,30 +43,30 @@
 </head>
 <body>
   <header>
-    <h1>Delivery Note</h1>
-    <p>Order ID: <strong><%= order.idOrder %></strong></p>
-    <p>Date: <strong><%= order.deliveryDate || order.orderDate %></strong></p>
+    <h1>Lieferschein</h1>
+    <p>Lieferscheinnummer: <strong>2025-<%= order.idOrder %></strong></p>
+    <p>Datum: <strong><%= order.deliveryDate || order.orderDate %></strong></p>
   </header>
 
   <div class="customer">
-    <h3>Customer</h3>
+    <h3>Kunde</h3>
     <p><strong>Name:</strong> <%= order.customer.name %></p>
-    <p><strong>Address:</strong> <%= order.customer.address %></p>
-    <p><strong>Phone:</strong> <%= order.customer.phone %></p>
+    <p><strong>Adresse:</strong> <%= order.customer.address %></p>
+    <p><strong>Telefon:</strong> <%= order.customer.phone %></p>
     <% if(order.customer.email){ %>
-      <p><strong>Email:</strong> <%= order.customer.email %></p>
+      <p><strong>E-Mail:</strong> <%= order.customer.email %></p>
     <% } %>
   </div>
 
   <div class="order-info">
-    <h3>Items</h3>
+    <h3>Artikel</h3>
     <table>
       <thead>
         <tr>
-          <th>#</th>
-          <th>Product Name</th>
-          <th>Quantity</th>
-          <th>Unit</th>
+          <th>Nr.</th>
+          <th>Produktname</th>
+          <th>Menge</th>
+          <th>Einheit</th>
         </tr>
       </thead>
       <tbody>
@@ -75,7 +75,7 @@
             <td><%= index + 1 %></td>
             <td><%= item.productName %></td>
             <td><%= item.quantity %></td>
-            <td><%= item.unit || "pcs" %></td>
+            <td><%= item.unit || "Stk." %></td>
           </tr>
         <% }) %>
       </tbody>
@@ -83,7 +83,7 @@
   </div>
 
   <div class="footer">
-    <p>Thank you for your business!</p>
+    <p>Vielen Dank für Ihren Auftrag!</p>
   </div>
 </body>
 </html>

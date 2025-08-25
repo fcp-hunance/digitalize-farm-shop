@@ -1,8 +1,10 @@
 -- Persons
 INSERT INTO `t_Person` (`idPerson`, `strFirstName`, `strLastName`, `strPhone`, `strAddress`) VALUES
-    (1, 'Sandra', 'Stock', '+49 170 1234567', 'Hauptstraße 12, 12345 Musterstadt'),
-    (2, 'Birgitt', 'Bock', '+49 176 2345678', 'Gartenweg 8, 54321 Beispielort'),
-    (3, 'Hans', 'Hahn', '+49 151 3456789', 'Dorfplatz 5, 67890 Kleinstadt');
+    (1, 'Hans', 'Hahn', '+49 151 3456789', 'Dorfplatz 5, 67890 Kleinstadt'),
+    (2, 'Sandra', 'Hahn', '+49 170 1234567', 'Dorfplatz 5, 67890 Kleinstadt'),
+    (3, 'Thomas', 'Krupp', '+49 175 9865324', 'Nebenstraße 45, 12346 Musterstadt'),
+    (4, 'Birgitt', 'Bock', '+49 176 2345678', 'Gartenweg 8, 54321 Beispielort')
+    
 
 -- Product Groups
 INSERT INTO `t_ProductGroup` (`idGroup`, `strGroupName`) VALUES

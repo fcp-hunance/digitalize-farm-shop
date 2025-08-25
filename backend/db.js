@@ -13,7 +13,11 @@ async function query(sql, params) {
   let conn;
   try {
     conn = await pool.getConnection();
-    return await conn.query(sql, params);
+    const result = await conn.query(sql, params);
+    return result;
+  } catch (err) {
+    console.error("DB query error:", err);
+    throw err;
   } finally {
     if (conn) conn.release();
   }
