@@ -118,7 +118,7 @@ const LieferscheinErstellen = () => {
       </div>
 
       <div className="warenkorb">
-        <h2>Rechnungspositionen</h2>
+        <h2>Lieferungscheinpositionen</h2>
         <ul>
           {rechnungItems.map((item, index) => (
             <li key={index}>
@@ -163,7 +163,7 @@ const LieferscheinErstellen = () => {
             🖨️ Rechnung drucken
           </button>
           <button className="review-button" onClick={handleReview}>
-            Review
+            Vorschau
           </button>
           <button className="back-button" onClick={() => navigate("/lager")}>
             🔙 Zurück

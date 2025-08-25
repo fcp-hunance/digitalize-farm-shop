@@ -65,7 +65,7 @@ const DeliveryNote = () => {
         </button>
        
         <button className="review-button" onClick={handleReview}>
-          Review
+          Vorschau
         </button>
         <button className="back-button" onClick={() => navigate("/lager")}>
           🔙 Zurück
