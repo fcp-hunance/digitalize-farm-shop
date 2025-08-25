@@ -60,7 +60,7 @@ const ManageEmployees = () => {
     navigate("/");
   };
   
-  // ✅ Neue Funktion für den Zurück-Button
+  
   const handleBackToDashboard = () => {
       navigate("/dashboard");
   };
@@ -69,7 +69,7 @@ const ManageEmployees = () => {
     <div className="manage-employees-container">
       <header className="manage-employees-header">
         <h1>👤 Mitarbeiter verwalten</h1>
-        {/* ✅ Neue Buttons im Header */}
+       
         <div className="header-buttons">
             <button className="back-btn" onClick={handleBackToDashboard}>
                 🔙 Zurück

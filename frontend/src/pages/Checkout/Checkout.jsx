@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Kassier.css";
+import "./Checkout.css";
 
 const Kassier = ({ warenkorb, setWarenkorb }) => {
   const navigate = useNavigate();

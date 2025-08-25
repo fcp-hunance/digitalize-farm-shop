@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../Kassier/Kassier.css";
-import "./LieferscheinErstellen.css";
+import "../Checkout/Checkout.css";
+import "./DeliveryNoteCreation.css";
 
 const LieferscheinErstellen = () => {
   const navigate = useNavigate();
@@ -27,7 +27,6 @@ const LieferscheinErstellen = () => {
   const [menge, setMenge] = useState("");
   const [rabatt, setRabatt] = useState("");
   
-  // Neuer State für den Rechnungs-Rabatt
   const [rechnungsRabatt, setRechnungsRabatt] = useState(0);
 
   const berechnePreis = (produkt, menge) => {
@@ -70,14 +69,12 @@ const LieferscheinErstellen = () => {
 
   const komplettStorno = () => {
     setRechnungItems([]);
-    setRechnungsRabatt(0); // Rabatt auch zurücksetzen
+    setRechnungsRabatt(0);
   };
 
-  // Gesamtbetrag der Artikel vor dem Rabatt
   const gesamtsummeArtikel = rechnungItems
     .reduce((sum, item) => sum + parseFloat(item.preis), 0);
 
-  // Berechnung des endgültigen Gesamtbetrags nach Abzug des manuellen Rabatts
   const gesamtsummeNachRabatt = Math.max(0, gesamtsummeArtikel - rechnungsRabatt).toFixed(2);
 
   const handleLogout = () => {
@@ -85,9 +82,14 @@ const LieferscheinErstellen = () => {
   };
   
   const handleRechnungDrucken = () => {
-      alert("Rechnung wird gedruckt und als PDF exportiert.");
-      komplettStorno();
-      navigate('/lager');
+    alert("Rechnung wird gedruckt und als PDF exportiert.");
+    komplettStorno();
+    navigate('/lager');
+  };
+  
+  const handleReview = () => { // Funktion für Review
+    alert("Vorschau der Rechnung wird angezeigt.");
+    //  später eine Modal- oder Detailansicht rendern bzw backend?
   };
 
   return (
@@ -116,7 +118,7 @@ const LieferscheinErstellen = () => {
       </div>
 
       <div className="warenkorb">
-        <h2>Rechnungspositionen</h2>
+        <h2>Lieferungscheinpositionen</h2>
         <ul>
           {rechnungItems.map((item, index) => (
             <li key={index}>
@@ -132,7 +134,6 @@ const LieferscheinErstellen = () => {
           ))}
         </ul>
 
-        {/* Neuer Bereich für den Gesamtbetrag und Rabatt */}
         <div className="summen-section">
           <div className="summe-zeile">
             <span>Gesamtsumme:</span>
@@ -161,13 +162,15 @@ const LieferscheinErstellen = () => {
           <button className="print-button" onClick={handleRechnungDrucken}>
             🖨️ Rechnung drucken
           </button>
+          <button className="review-button" onClick={handleReview}>
+            Vorschau
+          </button>
           <button className="back-button" onClick={() => navigate("/lager")}>
             🔙 Zurück
           </button>
         </div>
       </div>
 
-      {/* Modal */}
       {modalProdukt && (
         <div className="modal-overlay">
           <div className="modal-box">

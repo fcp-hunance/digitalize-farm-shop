@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // ✅ Auth-Context importieren
+import { useAuth } from "../../context/AuthContext"; 
 import { useProducts } from "../../context/ProductContext";
 import "./WarehouseManagement.css";
 
 const WarehouseManagement = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth(); // ✅ Logout-Funktion aus dem Kontext holen
+  const { logout } = useAuth(); // Logout-Funktion aus dem Kontext holen
   const { products, addProduct, deleteProduct } = useProducts();
 
   const [newProduktName, setNewProduktName] = useState("");
@@ -37,7 +37,7 @@ const WarehouseManagement = () => {
       navigate("/dashboard");
   };
   
-  // ✅ Korrigierte Logout-Funktion
+  // Logout-Funktion
   const handleLogout = () => {
       logout(); // Sitzungsdaten löschen
       navigate("/"); // Zur Login-Seite leiten
