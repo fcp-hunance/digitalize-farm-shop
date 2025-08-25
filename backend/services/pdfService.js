@@ -21,7 +21,7 @@ async function generateInvoicePDF(invoiceData) {
 async function generateDeliveryNotePDF(order) {
   const html = await ejs.renderFile(
     path.join(__dirname, "../views/deliveryNote.ejs"),
-    order,
+    { order },
     { async: true }
   );
 

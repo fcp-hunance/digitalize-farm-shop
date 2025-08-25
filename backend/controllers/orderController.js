@@ -25,7 +25,7 @@ async function createDeliveryNote(req, res) {
 
    // Fetch order info from DB
     const order = await orderRepo.getOrderById(idOrder);
-
+    
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
@@ -33,8 +33,8 @@ async function createDeliveryNote(req, res) {
     const pdfBuffer = await generateDeliveryNotePDF(order);
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `inline; filename=delivery-note-${idOrder}.pdf`);
-    res.send(pdfBuffer);
+    res.setHeader("Content-Disposition", `attachment; filename=lieferschein-${idOrder}.pdf`);
+    res.end(pdfBuffer);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not generate delivery note PDF" });
