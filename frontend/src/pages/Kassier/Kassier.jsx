@@ -1,28 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Kassier.css";
 
 const Kassier = ({ warenkorb, setWarenkorb }) => {
   const navigate = useNavigate();
 
-  const produkte = [
-    { id: 1, name: "🍎 Äpfel", preis: 2.5, einheit: "kg" },
-    { id: 2, name: "🥔 Kartoffeln", preis: 1.8, einheit: "kg" },
-    { id: 3, name: "🥛 Milch", preis: 1.2, einheit: "l" },
-    { id: 4, name: "🍞 Brot", preis: 2.0, einheit: "Stück" },
-    { id: 5, name: "🥚 Eier", preis: 0.35, einheit: "Stück" },
-    { id: 6, name: "🥩 Fleisch", preis: 12.0, einheit: "kg" },
-    { id: 7, name: "🍯 Honig", preis: 4.5, einheit: "Stück" },
-    { id: 8, name: "🌽 Mais", preis: 1.2, einheit: "Stück" },
-    { id: 9, name: "🥗 Salat", preis: 1.5, einheit: "Stück" },
-    { id: 10, name: "🥕 Möhren", preis: 2.0, einheit: "kg" },
-    { id: 11, name: "🥯 Brötchen", preis: 0.4, einheit: "Stück" },
-    { id: 12, name: "🍓 Erdbeeren", preis: 4.5, einheit: "kg" },
-  ];
-
+  const [produkte, setProdukte] = useState([]);
+  const emojiMap = {
+  "Äpfel": "🍎",
+  "Kartoffeln": "🥔",
+  "Milch": "🥛",
+  "Brot": "🍞",
+  "Eier": "🥚",
+  "Fleisch": "🥩",
+  "Honig": "🍯",
+  "Mais": "🌽",
+  "Salat": "🥗",
+  "Möhren": "🥕",
+  "Brötchen": "🥯",
+  "Erdbeeren": "🍓",
+};
   const [modalProdukt, setModalProdukt] = useState(null);
   const [menge, setMenge] = useState("");
   const [rabatt, setRabatt] = useState("");
+
+  useEffect(() =>  {
+    const fetchProdukte = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/cashDesk/products");
+        console.error(response);
+        if (!response.ok) {
+          throw new Error("Fehler beim Laden der Produkte");
+        }
+        const data = await response.json();
+
+        // Map API data to UI format
+        const mappedProdukte = data.map((item) => {
+          const emoji = emojiMap[item.strProductName] || ""; // fallback: no emoji
+          return {
+          id: item.idProduct,
+          name: `${emoji} ${item.strProductName}`,
+          preis: parseFloat(item.decPrice),
+          einheit: mapUnit(item.fkUnit),
+          };
+        });
+
+        setProdukte(mappedProdukte);
+      } catch (err) {
+        console.error("Fehler beim Laden der Produkte:", err);
+      }
+    };
+
+    fetchProdukte();
+  }, []);
+
+  const mapUnit = (fkUnit) => {
+    switch (fkUnit) {
+      case 1:
+        return "kg";
+      case 2:
+        return "Stück";
+      case 3:
+        return "l";
+      default:
+        return "Stück";
+    }
+  };
 
   const berechnePreis = (produkt, menge) => {
     if (produkt.einheit === "kg") {
@@ -49,6 +92,8 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
       rabatt: rabattNum,
       preis: gesamtpreis.toFixed(2),
     };
+
+    console.log(neuerArtikel);
 
     setWarenkorb([...warenkorb, neuerArtikel]);
     setModalProdukt(null);
@@ -142,10 +187,13 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
               onChange={(e) => setMenge(e.target.value)}
             />
             <input
-              type="number"
+              type="text"
               placeholder="Rabatt in €"
               value={rabatt}
-              onChange={(e) => setRabatt(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value.replace(",", ".");
+                setRabatt(val);
+              }}
             />
             <div className="modal-buttons">
               <button onClick={hinzufuegen}>✅ Hinzufügen</button>

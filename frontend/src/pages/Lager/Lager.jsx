@@ -1,24 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useProducts } from "../../context/ProductContext";
 import "./Lager.css";
 
 const Lager = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { products } = useProducts();
+
   const [kundenId, setKundenId] = useState("");
 
-  const [produkte, setProdukte] = useState([
-    { id: 1, name: "Äpfel", bestand: 120, einheit: "kg" },
-    { id: 2, name: "Kartoffeln", bestand: 200, einheit: "kg" },
-    { id: 3, name: "Milch", bestand: 50, einheit: "l" },
-    { id: 4, name: "Brot", bestand: 80, einheit: "Stück" },
-  ]);
-
-  const handleLogout = () => {
-    navigate("/");
-  };
-  
-  // ✅ HIER IST DIE GEÄNDERTE LOGIK: "Rechnung" leitet auf eine Erstellungsseite weiter
-  const handleRechnung = () => {
+  const handleLieferscheinErstellen = () => {
     if (kundenId.trim() !== "") {
       navigate(`/rechnung-erstellen/${kundenId}`);
     } else {
@@ -26,14 +19,17 @@ const Lager = () => {
     }
   };
 
-  // ✅ HIER IST DIE GEÄNDERTE LOGIK: "Bestellung" leitet auf eine andere, separate Seite
-  const handleBestellung = () => {
+  const handleBestellungEinsehen = () => {
     if (kundenId.trim() !== "") {
-      // Dummy-Weiterleitung zu einer Bestellübersicht
       navigate(`/deliveryNote/${kundenId}`);
     } else {
       alert("Bitte geben Sie eine Kunden-ID ein.");
     }
+  };
+  
+  const handleLogout = () => {
+    logout();
+    navigate("/");
   };
 
   return (
@@ -41,7 +37,7 @@ const Lager = () => {
       <header className="lager-header">
         <h1>📦 Lagerverwaltung</h1>
         <button className="logout-btn" onClick={handleLogout}>
-          🚪 Logout
+          🚪 Abmelden
         </button>
       </header>
 
@@ -54,10 +50,10 @@ const Lager = () => {
           className="search-input"
         />
         <div className="search-buttons">
-          <button className="search-btn" onClick={handleRechnung}>
+          <button className="search-btn" onClick={handleLieferscheinErstellen}>
             Lieferschein Erstellen
           </button>
-          <button className="search-btn" onClick={handleBestellung}>
+          <button className="search-btn" onClick={handleBestellungEinsehen}>
             Bestellungen einsehen
           </button>
         </div>
@@ -76,7 +72,7 @@ const Lager = () => {
             </tr>
           </thead>
           <tbody>
-            {produkte.map((p) => (
+            {products.map((p) => (
               <tr key={p.id}>
                 <td>{p.id}</td>
                 <td>{p.name}</td>

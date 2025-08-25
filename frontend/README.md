@@ -1,88 +1,79 @@
-# Frontend - Digitalize Farm Shop
+# Digitalize Farm Shop Frontend
+Ein modernes Point-of-Sale (POS) und Verwaltungssystem für einen Hofladen. Die Anwendung ist rollenbasiert und zentralisiert die Datenverwaltung, um einen reibungslosen Betrieb zu gewährleisten.
 
-This folder contains the React.js frontend client for the Digitalize Farm Shop.
+## Funktionen
+Rollenbasiertes Login: Verschiedene Benutzerrollen (Admin, Kassierer, Lagerist) haben Zugriff auf spezifische Bereiche.
 
----
+Zentralisierte Zustandsverwaltung: Nutzt das React Context API für die globale Verwaltung von Benutzer- und Produktdaten.
 
-## Requirements
+Automatischer Sperrbildschirm: Schützt die Anwendung vor unbefugtem Zugriff durch automatische Bildschirmsperre nach 5 Minuten Inaktivität.
 
-- Node.js (v16+ recommended)
-- npm or yarn
+Kassenfunktion: Ermöglicht das Hinzufügen von Produkten aus einem Katalog, die Berechnung von Rabatten und die Abwicklung von Zahlungen.
 
----
+Mitarbeiterverwaltung: Ermöglicht Admins, Mitarbeiter hinzuzufügen, zu löschen sowie deren PINs und Passwörter zurückzusetzen.
 
-## Setup
+Lagerverwaltung: Separate Oberflächen für Admins (Produkt hinzufügen/löschen) und Lageristen (Warenbestand einsehen).
 
-1. Install dependencies:
-    ```bash
-    cd frontend
-    npm install
-    ```
-    Configure environment variables:
+Bestell- & Rechnungsverwaltung: Funktion zum Erstellen von Lieferscheinen und Rechnungen basierend auf einer Kunden-ID.
 
-    Copy .env.example to .env and update API base URLs if needed.
-2. Running the app
+## Erste Schritte
 
-    Development mode with hot reloading:
-    ```bash
-    npm start
-    ```
-    Build for production:
-    ```bash
-    npm run build
-    ```
-    Serve production build (e.g., with serve package or integrated with backend)
+### Voraussetzungen
+Stelle sicher, dass Node.js und ein Paketmanager wie npm oder yarn auf deinem System installiert sind.
 
-## Features
+### Installation
 
-    Cash Desk UI: Enter items, weights/counts, print receipt
+### 1. Klone das Repository:
 
-    Warehouse UI: Inventory status, create invoices
-
-    Dashboard UI: Visualize sales, turnover, inventory data, users management
-
-## Authentication Context (after a successfully frontend-backend implentation )
-REACT_APP_API_URL=http://localhost:3000/api in .env or .env.development
+```Bash
+git clone https://github.com/dein-benutzername/digitalize-farm-shop-frontend.git
+cd digitalize-farm-shop-frontend
 ```
-import { AuthProvider } from "./context/AuthContext";
+### 2. Installiere die Abhängigkeiten:
 
-<AuthProvider>
-    (here comes the Code for the main page)
-</AuthProvider>
-```
-Login example:
-```
-const login = async (username, password) => {
-    try {
-      const response = await axios.post(
-        `${API_URL}/auth/login`,
-        { username, password },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      const { token, user, role } = response.data;
-      localStorage.setItem('token', token);
-      setAuth({ token });
-      setUser(username);
-      setRoleContext(role);
-      startTknExpTimer(token);
-      return response.data;
-    } catch (error) {
-      throw error.response ? error.response.data : new Error('Network error');
-    }
-  };
-```
-Logout Example:
-const logout = (message) => {
-    setModalMessage(message)
-    setAuth(null);
-    setUser("");
-    setRoleContext("");
-    localStorage.removeItem('token');
-    clearTimeout(timeoutRef.current);
-  };
 
-For more info see the AuthContext.js
-## Testing   
-Add testing instructions here (if tests are implemented).
-## License   
-MIT License
+
+```Bash
+
+npm install
+# oder yarn install
+```
+
+### 3. Starte die Anwendung im Entwicklungsmodus:
+
+```Bash
+
+npm run dev
+# oder yarn dev
+```
+
+Die Anwendung wird unter http://localhost:5173 oder einem ähnlichen Port verfügbar sein.
+
+## Nutzung
+
+### Login-Daten (Dummy)
+Verwende diese Daten, um dich mit verschiedenen Rollen anzumelden:
+
+|Benutzername|	Passwort|	Rolle	|Zugriffsseite|
+|---|---|---|---|
+| `Max Mustermann`| `password123` |	`Admin` |	`Dashboard` |
+| `Erika Mustermann`| `password123` |	`Kassiererin` |	`Kasse` |
+| `John Doe`| `password123` |	`Lagerist` |	`Lager` |
+
+
+
+### Wichtige Hinweise
+
+- Autofill-Probleme: Die Eingabefelder sind mit autoComplete="new-password" konfiguriert, um die Autofill-Funktion von Browsern zu umgehen.
+- Lieferschein/Bestellung: Gib eine beliebige Kunden-ID in das Eingabefeld ein, um die entsprechenden Funktionen auszulösen.
+
+## Verwendete Technologien
+
+- React & Vite
+
+- React Router
+
+- Recharts (für Diagramme auf dem Dashboard)
+
+- React Context API (für zentrales State Management)
+

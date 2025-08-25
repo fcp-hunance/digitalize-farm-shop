@@ -10,11 +10,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext"; // ✅ Korrekter Import des Hooks
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const [filter, setFilter] = useState("Woche");
   const navigate = useNavigate();
+  // ✅ Den Hook direkt aufrufen, um die Werte zu erhalten
+  const { user, roleContext, logout } = useAuth();
 
   // Dummy-Daten (später Backend)
   const data = [
@@ -27,18 +30,17 @@ const Dashboard = () => {
     { name: "So", eigene: 34, kommission: 43, zukauf: 90 },
   ];
 
-  // Logout-Funktion
   const handleLogout = () => {
+    logout();
     navigate("/");
   };
   
-  // Neue Funktion für die Navigation im Dropdown
   const handleNavigation = (event) => {
     const value = event.target.value;
     if (value === "Mitarbeiter") {
       navigate("/mitarbeiter");
     } else if (value === "Lagerverwaltung") {
-      navigate("/lager");
+      navigate("/warehouse-management");
     }
   };
 
@@ -48,7 +50,7 @@ const Dashboard = () => {
       <header className="dashboard-header">
         <h1>📊 Statistik</h1>
         <div className="header-right">
-          <div className="user-info">👤 Benutzer: Admin</div>
+          <div className="user-info">👤 Benutzer: {user}</div>
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
@@ -67,14 +69,16 @@ const Dashboard = () => {
           </select>
         </div>
 
-        {/* Neues Dropdown-Menü */}
-        <div className="navigation-section">
-          <select onChange={handleNavigation} defaultValue="">
-            <option value="" disabled hidden>Verwalten</option>
-            <option value="Mitarbeiter">Mitarbeiter verwalten</option>
-            <option value="Lagerverwaltung">Lagerverwaltung</option>
-          </select>
-        </div>
+        {/* Neues Dropdown-Menü, nur für Admin sichtbar */}
+        {roleContext === 'Admin' && (
+            <div className="navigation-section">
+                <select onChange={handleNavigation} defaultValue="">
+                    <option value="" disabled hidden>Verwalten</option>
+                    <option value="Mitarbeiter">Mitarbeiter verwalten</option>
+                    <option value="Lagerverwaltung">Lagerverwaltung</option>
+                </select>
+            </div>
+        )}
       </div>
 
       {/* Statistik-Karten */}
