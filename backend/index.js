@@ -24,9 +24,10 @@ app.use('/api/receipt', receiptRoute);
 app.use('/api/test', testRoute);
 app.use('/api/admin', adminRoute);
 
-
-
 const PORT = process.env.PORTserver || 3000;
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
 });
+
+const registerEmployees = require("./data/initEmployees");
+registerEmployees().then(() => console.log("Default employees initialization done"));

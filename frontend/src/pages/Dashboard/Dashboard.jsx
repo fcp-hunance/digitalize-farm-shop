@@ -70,7 +70,7 @@ const Dashboard = () => {
         </div>
 
         {/* Neues Dropdown-Menü, nur für Admin sichtbar */}
-        {roleContext === 'Admin' && (
+        {roleContext === 'admin' && (
             <div className="navigation-section">
                 <select onChange={handleNavigation} defaultValue="">
                     <option value="" disabled hidden>Verwalten</option>
