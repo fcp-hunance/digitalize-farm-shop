@@ -1,12 +1,11 @@
-const mariadb = require('mariadb');
+const mysql = require("mysql2/promise");
 require('dotenv').config();
 
-const pool = mariadb.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  connectionLimit: 5,
+const pool = mysql.createPool({
+  host: "localhost",
+  user: "dein_db_user",
+  password: "dein_db_passwort",
+  database: "deine_datenbank"
 });
 
 async function query(sql, params) {

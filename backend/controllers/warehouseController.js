@@ -57,6 +57,11 @@ async function updateIntStock(req, res) {
   }
 }
 
+// ...existing code...
+const salesRoutes = require("./routes/sales");
+app.use("/api/sales", salesRoutes);
+// ...existing code...
+
 module.exports = {
  getIntStock,
  updateIntStock,
