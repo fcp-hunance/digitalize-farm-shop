@@ -11,8 +11,8 @@ const app = express();
 app.use(express.json());
 
 async function login(req, res) {
-  const { username, password, } = req.body;
-
+  const { username, password } = req.body;
+  console.log("Login attemp, username: "+username+" , password: "+password);
 
   if (!username || !password) {
   return res.status(400).json({ error: 'Benutzername und Passwort erforderlich' });

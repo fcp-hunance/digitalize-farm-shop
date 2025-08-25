@@ -39,7 +39,13 @@
   <table>
     <% items.forEach(it => { %>
       <tr>
-        <td><%= it.qty %>x <%= it.name %></td>
+        <td>
+          <%= it.qty %>
+          <% if(it.unit === "kg") { %>kg<% } %>
+          <% if(it.unit === "Stück") { %> Stück<% } %>
+          <% if(it.unit === "l") { %> l<% } %>
+          &nbsp;<%= it.name %>
+        </td>
         <td class="right"><%= (it.lineTotal).toFixed(2) %> <%= data.currency %></td>
       </tr>
     <% }) %>

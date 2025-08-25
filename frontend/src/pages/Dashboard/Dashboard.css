@@ -23,7 +23,7 @@
   color: #555;
 }
 
-/* Neuer Container für Filter und Navigation */
+/*Container für Filter und Navigation */
 .filter-and-nav-section {
   display: flex;
   justify-content: space-between;
@@ -39,7 +39,7 @@
   border-radius: 5px;
   border: 1px solid #ccc;
   font-weight: bold;
-  background-color: white; /* Einheitlicher weißer Hintergrund */
+  background-color: white; 
   color: #333;
   cursor: pointer;
 }
