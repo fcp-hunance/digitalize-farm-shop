@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [modalMessage, setModalMessage] = useState("");
   const location = useLocation();
   
-  // ✅ Neu: Ein Ref zur Speicherung des Timers
+  // Ein Ref zur Speicherung des Timers
   const timeoutRef = useRef(null);
 
   const [employees, setEmployees] = useState([
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     return false;
   };
   
-  // ✅ KORRIGIERTER USEEFFECT-HOOK FÜR TIMER
+  // USEEFFECT-HOOK FÜR TIMER
   useEffect(() => {
     let timer;
 
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }) => {
       window.removeEventListener('keypress', handleActivity);
       window.removeEventListener('click', handleActivity);
     };
-  }, [user, isLocked]); // Abhängigkeiten korrigiert
+  }, [user, isLocked]); // Abhängigkeiten 
 
   useEffect(() => {
     setLoading(false);

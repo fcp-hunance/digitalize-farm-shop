@@ -10,13 +10,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // ✅ Korrekter Import des Hooks
+import { useAuth } from "../../context/AuthContext"; 
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const [filter, setFilter] = useState("Woche");
   const navigate = useNavigate();
-  // ✅ Den Hook direkt aufrufen, um die Werte zu erhalten
+  // Den Hook direkt aufrufen, um die Werte zu erhalten
   const { user, roleContext, logout } = useAuth();
 
   // Dummy-Daten (später Backend)
@@ -57,7 +57,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Filter und neues Dropdown-Menü */}
+      {/* Filter und  Dropdown-Menü */}
       <div className="filter-and-nav-section">
         <div className="filter-section">
           <label>Zeitraum: </label>
@@ -69,7 +69,7 @@ const Dashboard = () => {
           </select>
         </div>
 
-        {/* Neues Dropdown-Menü, nur für Admin sichtbar */}
+        {/* Dropdown-Menü, nur für Admin sichtbar */}
         {roleContext === 'Admin' && (
             <div className="navigation-section">
                 <select onChange={handleNavigation} defaultValue="">

@@ -32,7 +32,7 @@ const Payment = ({ warenkorb, setWarenkorb }) => {
   };
 
   const handleKassenbonDrucken = () => {
-    // ✅ HIER IST DIE ÄNDERUNG: Weiterleitung zur Kassier-Seite
+    // Weiterleitung zur Kassier-Seite
     setShowModal(false);
     setWarenkorb([]);
     navigate("/kassier");

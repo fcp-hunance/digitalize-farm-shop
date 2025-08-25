@@ -1,60 +1,60 @@
 # Digitalize Farm Shop Frontend
-Ein modernes Point-of-Sale (POS) und Verwaltungssystem für einen Hofladen. Die Anwendung ist rollenbasiert und zentralisiert die Datenverwaltung, um einen reibungslosen Betrieb zu gewährleisten.
+A modern point-of-sale (POS) and management system for a farm shop. The application is role-based and centralizes data management to ensure smooth operations.
 
 ## Funktionen
-Rollenbasiertes Login: Verschiedene Benutzerrollen (Admin, Kassierer, Lagerist) haben Zugriff auf spezifische Bereiche.
+- Role-Based Login: Various user roles (Admin, Cashier, Warehouse Worker) have access to specific areas.
 
-Zentralisierte Zustandsverwaltung: Nutzt das React Context API für die globale Verwaltung von Benutzer- und Produktdaten.
+- Centralized State Management: Utilizes the React Context API for global management of user and product data.
 
-Automatischer Sperrbildschirm: Schützt die Anwendung vor unbefugtem Zugriff durch automatische Bildschirmsperre nach 5 Minuten Inaktivität.
+- Automatic Screen Lock: Protects the application from unauthorized access by automatically locking the screen after one minutes of inactivity.
 
-Kassenfunktion: Ermöglicht das Hinzufügen von Produkten aus einem Katalog, die Berechnung von Rabatten und die Abwicklung von Zahlungen.
+- Cashier Functionality: Allows adding products from a catalog, calculating discounts, and processing payments.
 
-Mitarbeiterverwaltung: Ermöglicht Admins, Mitarbeiter hinzuzufügen, zu löschen sowie deren PINs und Passwörter zurückzusetzen.
+- Employee Management: Allows Admins to add and delete employees, as well as reset their PINs and passwords.
 
-Lagerverwaltung: Separate Oberflächen für Admins (Produkt hinzufügen/löschen) und Lageristen (Warenbestand einsehen).
+- Warehouse Management: Separate interfaces for Admins (add/delete products) and Warehouse Workers (view inventory).
 
-Bestell- & Rechnungsverwaltung: Funktion zum Erstellen von Lieferscheinen und Rechnungen basierend auf einer Kunden-ID.
+- Order & Invoice Management: Functionality for creating delivery notes and invoices based on a customer ID.
 
-## Erste Schritte
+## Getting Started
 
-### Voraussetzungen
-Stelle sicher, dass Node.js und ein Paketmanager wie npm oder yarn auf deinem System installiert sind.
+### Prerequisites
+Ensure that Node.js and a package manager like npm or yarn are installed on your system.
 
 ### Installation
 
-### 1. Klone das Repository:
+### 1. Clone the repository:
 
 ```Bash
 git clone https://github.com/dein-benutzername/digitalize-farm-shop-frontend.git
 cd digitalize-farm-shop-frontend
 ```
-### 2. Installiere die Abhängigkeiten:
+### 2. Install dependencies:
 
 
 
 ```Bash
 
 npm install
-# oder yarn install
+# or yarn install
 ```
 
-### 3. Starte die Anwendung im Entwicklungsmodus:
+### 3. Start the application in development mode:
 
 ```Bash
 
 npm run dev
-# oder yarn dev
+# or yarn dev
 ```
 
-Die Anwendung wird unter http://localhost:5173 oder einem ähnlichen Port verfügbar sein.
+The application will be available at http://localhost:5173 or a similar port.
 
-## Nutzung
+## Usage
 
-### Login-Daten (Dummy)
-Verwende diese Daten, um dich mit verschiedenen Rollen anzumelden:
+### Login Credentials (Dummy)
+Use these details to log in with different roles:
 
-|Benutzername|	Passwort|	Rolle	|Zugriffsseite|
+| Username |	Password |	Role	| Access Page |
 |---|---|---|---|
 | `Max Mustermann`| `password123` |	`Admin` |	`Dashboard` |
 | `Erika Mustermann`| `password123` |	`Kassiererin` |	`Kasse` |
@@ -62,18 +62,19 @@ Verwende diese Daten, um dich mit verschiedenen Rollen anzumelden:
 
 
 
-### Wichtige Hinweise
+### Important Notes
 
-- Autofill-Probleme: Die Eingabefelder sind mit autoComplete="new-password" konfiguriert, um die Autofill-Funktion von Browsern zu umgehen.
-- Lieferschein/Bestellung: Gib eine beliebige Kunden-ID in das Eingabefeld ein, um die entsprechenden Funktionen auszulösen.
+- Autofill Issues: Input fields are configured with autoComplete="new-password" to bypass browser autofill features.
 
-## Verwendete Technologien
+- Delivery Note/Order: Enter any customer ID in the input field to trigger the corresponding functions.
+
+## Technologies Used
 
 - React & Vite
 
 - React Router
 
-- Recharts (für Diagramme auf dem Dashboard)
+- Recharts (for charts on the Dashboard)
 
-- React Context API (für zentrales State Management)
+- React Context API (for centralized state management)
 
