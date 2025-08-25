@@ -79,7 +79,7 @@ const Payment = ({ warenkorb, setWarenkorb }) => {
       {/* Abschnitt für Beträge und Rabatt */}
       <div className="betrag-section">
         <label>Gesamtbetrag (Warenkorb):</label>
-        <input type="number" step="0.01" value={gesamtbetrag} readOnly />
+        <input type="number" step="0.01" value={gesamtbetrag} disabled />
       </div>
 
       <div className="betrag-section">
@@ -94,7 +94,7 @@ const Payment = ({ warenkorb, setWarenkorb }) => {
 
       <div className="betrag-section">
         <label>Zu zahlender Betrag:</label>
-        <input type="number" step="0.01" value={zuZahlenderBetrag} readOnly />
+        <input type="number" step="0.01" value={zuZahlenderBetrag} disabled />
       </div>
 
       <div className="zahlungsart-section">
