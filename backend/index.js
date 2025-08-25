@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require("cors");
 const app = express();
 
 
@@ -11,6 +12,8 @@ const invoiceRoute = require('./routes/invoice');
 const receiptRoute = require('./routes/receipt');
 const testRoute = require('./routes/test');
 const adminRoute = require('./routes/admin');
+
+app.use(cors());
 app.use(express.json()); // JSON-Body parsen
 
 app.use('/api/cashDesk', cashDeskRoute);
@@ -21,9 +24,10 @@ app.use('/api/receipt', receiptRoute);
 app.use('/api/test', testRoute);
 app.use('/api/admin', adminRoute);
 
-
-
 const PORT = process.env.PORTserver || 3000;
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
 });
+
+const registerEmployees = require("./data/initEmployees");
+registerEmployees().then(() => console.log("Default employees initialization done"));
