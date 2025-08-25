@@ -35,9 +35,9 @@ const Payment = ({ warenkorb, setWarenkorb }) => {
     try {
       // Build items array
       const items = warenkorb.map((item) => ({
-        idProduct: item.id, // make sure your warenkorb items store `id`
-        quantity:
-          item.einheit === "kg" ? item.menge / 1000 : item.menge, // grams -> kg
+        idProduct: item.id,
+        quantity: item.menge,
+        unit: item.einheit,
       }));
 
       const body = {
@@ -61,9 +61,13 @@ const Payment = ({ warenkorb, setWarenkorb }) => {
         throw new Error("Fehler beim Erstellen des Kassenbons");
       }
 
-      // Optional: get response if needed
-      const data = await response.json();
-      console.log("Kassenbon erstellt:", data);
+      // Get HTML text from response
+      const html = await response.text();
+
+      // Open a new tab and write the HTML into it
+      const newWindow = window.open();
+      newWindow.document.write(html);
+      newWindow.document.close(); // finish writing so browser renders it
 
       // Clear modal, Warenkorb and navigate back
       setShowModal(false);

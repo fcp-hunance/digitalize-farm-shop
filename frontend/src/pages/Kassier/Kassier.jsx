@@ -79,21 +79,22 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
     let mengeNum = Number(menge);
     let rabattNum = Number(rabatt);
     if (!mengeNum || mengeNum <= 0) return;
-
     if (!rabattNum || rabattNum < 0) rabattNum = 0;
 
     let gesamtpreis = berechnePreis(modalProdukt, mengeNum) - rabattNum;
     if (gesamtpreis < 0) gesamtpreis = 0;
 
+  // Store quantity in the original unit (kg or Stück)
+    const mengeInEinheit = modalProdukt.einheit === "kg" ? mengeNum / 1000 : mengeNum; // convert g -> kg
+
     const neuerArtikel = {
+      id: modalProdukt.id,
       name: modalProdukt.name,
-      menge: mengeNum,
-      einheit: modalProdukt.einheit === "kg" ? "g" : modalProdukt.einheit,
+      menge: mengeInEinheit,
+      einheit: modalProdukt.einheit,
       rabatt: rabattNum,
       preis: gesamtpreis.toFixed(2),
     };
-
-    console.log(neuerArtikel);
 
     setWarenkorb([...warenkorb, neuerArtikel]);
     setModalProdukt(null);
