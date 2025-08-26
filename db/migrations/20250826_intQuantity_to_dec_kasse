@@ -1,0 +1,15 @@
+-- 1. Add a new column with DECIMAL type
+ALTER TABLE `t_Product_CashDeskOrder`
+ADD COLUMN `decQuantity` DECIMAL(10,3) NULL AFTER `intQuantity`;
+
+-- 2. Copy existing integer values into the new column
+UPDATE `t_Product_CashDeskOrder`
+SET `decQuantity` = `intQuantity`;
+
+-- 3. (Optional) Drop the old intQuantity column
+ALTER TABLE `t_Product_CashDeskOrder`
+DROP COLUMN `intQuantity`;
+
+-- 4. (Optional) Rename decQuantity to intQuantity if you want to keep the same column name
+ALTER TABLE `t_Product_CashDeskOrder`
+CHANGE COLUMN `decQuantity` `decQuantity` DECIMAL(10,3) NOT NULL;

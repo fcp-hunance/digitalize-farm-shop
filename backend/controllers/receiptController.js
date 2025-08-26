@@ -50,7 +50,7 @@ async function createReceipt(req, res) {
 
       try {
         const r = await query(
-          `INSERT INTO t_Product_CashDeskOrder (fkProduct, fkCashDeskOrder, intQuantity)
+          `INSERT INTO t_Product_CashDeskOrder (fkProduct, fkCashDeskOrder, decQuantity)
            VALUES (?, ?, ?)`,
           [it.idProduct, orderId, it.quantity]
         );

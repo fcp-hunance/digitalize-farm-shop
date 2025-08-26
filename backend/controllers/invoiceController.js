@@ -1,8 +1,54 @@
 const { calcInvoice } = require("../services/invoiceService");
 const { generateInvoicePDF } = require("../services/pdfService");
-const { query } = require("../db")
+const { query } = require("../db");
 const path = require("path");
 const ejs = require("ejs");
+
+// Helper: map unit ids
+const mapUnit = (unitId) => {
+  switch (unitId) {
+    case 1: return "kg";
+    case 2: return "Stück";
+    case 3: return "l";
+    default: return "";
+  }
+};
+
+// Helper: format numbers with "," and without unnecessary decimals
+const formatQuantity = (value) => {
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  const rounded = Math.round(num * 1000) / 1000;
+  let str = rounded.toString().replace(".", ",");
+  // remove trailing zeros after comma
+  str = str.replace(/,?0+$/, "");
+  return str;
+};
+
+// Helper: merge items with same name + unit
+const mergeItems = (products) => {
+  const merged = {};
+  for (const p of products) {
+    const key = `${p.strProductName}_${p.fkUnit}`;
+    if (!merged[key]) {
+      merged[key] = {
+        name: p.strProductName,
+        unit: mapUnit(p.fkUnit),
+        qty: 0,
+        price: parseFloat(p.decPrice),
+        lineTotal: 0
+      };
+    }
+    const qty = parseFloat(p.decQuantity);
+    merged[key].qty += qty;
+    merged[key].lineTotal += parseFloat(p.decPrice) * qty;
+  }
+
+  return Object.values(merged).map(i => ({
+    ...i,
+    qty: formatQuantity(i.qty)
+  }));
+};
 
 async function createInvoice(req, res) {
   try {
@@ -11,12 +57,10 @@ async function createInvoice(req, res) {
       return res.status(400).json({ error: "customerId and month required" });
     }
 
-    // Parse month
     const [year, mon] = month.split("-");
     const startDate = `${year}-${mon}-01`;
-    const endDate = `${year}-${mon}-31`; // rough end of month
+    const endDate = `${year}-${mon}-31`;
 
-    // Get orders for this customer in the month
     const orders = await query(
       `SELECT o.idOrder, o.dateOrderDate, o.decTotal
        FROM t_Order o
@@ -28,44 +72,24 @@ async function createInvoice(req, res) {
       return res.status(404).json({ error: "No orders found for this customer in that month" });
     }
 
-    // Get all products for these orders
     const orderIds = orders.map(o => o.idOrder);
     const placeholders = orderIds.map(() => "?").join(",");
     const products = await query(
-      `SELECT po.fkOrder, po.fkProduct, po.intQuantity, p.strProductName, p.decPrice, p.fkUnit
+      `SELECT po.fkOrder, po.fkProduct, po.decQuantity, p.strProductName, p.decPrice, p.fkUnit
        FROM t_Product_Order po
        JOIN t_Product p ON po.fkProduct = p.idProduct
        WHERE po.fkOrder IN (${placeholders})`,
       orderIds
     );
 
-    // Map units
-    const mapUnit = (unitId) => {
-      switch(unitId) {
-        case 1: return "kg";
-        case 2: return "Stück";
-        case 3: return "l";
-        default: return "";
-      }
-    };
+    const items = mergeItems(products);
 
-    // Build items array
-    const items = products.map(p => ({
-      name: p.strProductName,
-      unit: mapUnit(p.fkUnit),
-      qty: p.intQuantity,
-      price: parseFloat(p.decPrice),
-      lineTotal: parseFloat(p.decPrice) * p.intQuantity
-    }));
-
-    // Calculate totals
     const totals = {
       net: items.reduce((sum, i) => sum + i.lineTotal, 0),
       tax: items.reduce((sum, i) => sum + i.lineTotal, 0) * 0.07,
       gross: items.reduce((sum, i) => sum + i.lineTotal, 0) * 1.07
     };
 
-    // Get customer info
     const [customer] = await query(
       `SELECT strName AS name, strAddress AS address FROM t_MajorCustomer WHERE idCustomer = ?`,
       [customerId]
@@ -75,7 +99,6 @@ async function createInvoice(req, res) {
       return res.status(404).json({ error: "Customer not found" });
     }
 
-    // Prepare invoice data
     const invoiceData = {
       data: {
         invoiceNumber: "INV-" + Date.now(),
@@ -116,12 +139,10 @@ async function previewInvoice(req, res) {
       return res.status(400).json({ error: "customerId and month required" });
     }
 
-    // Parse month
     const [year, mon] = month.split("-");
     const startDate = `${year}-${mon}-01`;
-    const endDate = `${year}-${mon}-31`; // rough end of month
+    const endDate = `${year}-${mon}-31`;
 
-    // Get orders for this customer in the month
     const orders = await query(
       `SELECT o.idOrder, o.dateOrderDate, o.decTotal
        FROM t_Order o
@@ -133,44 +154,24 @@ async function previewInvoice(req, res) {
       return res.status(404).json({ error: "No orders found for this customer in that month" });
     }
 
-    // Get all products for these orders
     const orderIds = orders.map(o => o.idOrder);
     const placeholders = orderIds.map(() => "?").join(",");
     const products = await query(
-      `SELECT po.fkOrder, po.fkProduct, po.intQuantity, p.strProductName, p.decPrice, p.fkUnit
+      `SELECT po.fkOrder, po.fkProduct, po.decQuantity, p.strProductName, p.decPrice, p.fkUnit
        FROM t_Product_Order po
        JOIN t_Product p ON po.fkProduct = p.idProduct
        WHERE po.fkOrder IN (${placeholders})`,
       orderIds
     );
 
-    // Map units
-    const mapUnit = (unitId) => {
-      switch(unitId) {
-        case 1: return "kg";
-        case 2: return "Stück";
-        case 3: return "l";
-        default: return "";
-      }
-    };
+    const items = mergeItems(products);
 
-    // Build items array
-    const items = products.map(p => ({
-      name: p.strProductName,
-      unit: mapUnit(p.fkUnit),
-      qty: p.intQuantity,
-      price: parseFloat(p.decPrice),
-      lineTotal: parseFloat(p.decPrice) * p.intQuantity
-    }));
-
-    // Calculate totals
     const totals = {
       net: items.reduce((sum, i) => sum + i.lineTotal, 0),
       tax: items.reduce((sum, i) => sum + i.lineTotal, 0) * 0.07,
       gross: items.reduce((sum, i) => sum + i.lineTotal, 0) * 1.07
     };
 
-    // Get customer info
     const [customer] = await query(
       `SELECT strName AS name, strAddress AS address FROM t_MajorCustomer WHERE idCustomer = ?`,
       [customerId]
@@ -180,7 +181,6 @@ async function previewInvoice(req, res) {
       return res.status(404).json({ error: "Customer not found" });
     }
 
-    // Prepare invoice data
     const invoiceData = {
       data: {
         invoiceNumber: "INV-" + Date.now(),
@@ -203,7 +203,6 @@ async function previewInvoice(req, res) {
       totals
     };
 
-    // Render HTML
     const html = await ejs.renderFile(
       path.join(__dirname, "../views/invoice.ejs"),
       invoiceData,

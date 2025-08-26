@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
       SELECT 
         p.idProduct AS productId,
         p.strProductName AS productName,
-        SUM(po.intQuantity) AS count
+        SUM(po.decQuantity) AS count
       FROM t_Product_Order po
       JOIN t_Product p ON po.fkProduct = p.idProduct
       GROUP BY p.idProduct, p.strProductName

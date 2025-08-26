@@ -34,7 +34,7 @@ async function getOrdersByMonth(idCustomer, month) {
 
   const orders = await query(
     `SELECT o.idOrder, o.dateOrderDate, dn.idDeliveryNote, 
-            po.fkProduct, po.intQuantity
+            po.fkProduct, po.decQuantity
      FROM t_Order o
      JOIN t_DeliveryNote dn ON dn.fkOrder = o.idOrder
      JOIN t_Product_Order po ON po.fkOrder = o.idOrder
@@ -55,7 +55,7 @@ async function getOrdersByMonth(idCustomer, month) {
     }
     grouped[r.idOrder].items.push({
       productId: r.fkProduct,
-      quantity: r.intQuantity,
+      quantity: r.decQuantity,
     });
   });
 
