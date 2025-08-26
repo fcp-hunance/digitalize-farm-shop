@@ -51,7 +51,7 @@ async function updateIntStock(productID, menge, richtung) {
 }
 
 async function addProduct(productData) {
-  const {  name, preis, intStock } = productData;
+  const {  name, preis, intStock, fkUnit } = productData;
 
   // Prüfen ob Artikelnummer bereits existiert
   //const existingProduct = await db.query(
@@ -67,13 +67,13 @@ async function addProduct(productData) {
 
   // Artikel einfügen
   const result = await db.query(
-    "INSERT INTO t_product (strProductName, decPrice, intStock) VALUES (?, ?, ?)",
-    [ name, preis, intStock]
+    "INSERT INTO t_product (strProductName, decPrice, intStock, fkUnit) VALUES (?, ?, ?, ?)",
+    [ name, preis, intStock,fkUnit]
   );
 
   // Neuen Artikel mit ID abrufen
   const newProduct = await db.query(
-    "SELECT idProduct, strProductName, decPrice, intStock FROM t_product WHERE idProduct = ?",
+    "SELECT idProduct, strProductName, decPrice, intStock, fkUnit FROM t_product WHERE idProduct = ?",
     [result.insertId]
   );
 
@@ -119,7 +119,14 @@ function extractRows(result) {
          result;
 }
 
+async function getAllProducts() {
+  // Beispiel mit SQL: passe es an dein DB-Layer an
+  const rows = await db.query("SELECT idProduct, strProductName, decPrice, intStock, fkUnit FROM t_product");
+  return rows;
+}
+
 module.exports = {
+  getAllProducts,
   getIntStock,
   updateIntStock,
   addProduct,

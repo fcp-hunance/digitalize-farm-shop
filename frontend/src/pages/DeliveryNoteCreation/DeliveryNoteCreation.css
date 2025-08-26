@@ -1,4 +1,21 @@
-.print-button {
+.logout-btn {
+  background: #256428;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-left: 700px;
+}
+
+.lieferschein-buttons {
+  margin: auto;
+  width: fit-content;
+}
+
+.print-button,
+.bestatigen-button {
   flex: 1; 
   padding: 12px 18px;
   border: 2px solid #e2e8f0;
@@ -12,7 +29,15 @@
   margin-right: 20px;
 }
 
-.print-button:hover {
+.bestatigen-button:disabled {
+  background-color: #cccccc;  /* grau */
+  color: #666666;            /* etwas dunklerer Text */
+  cursor: not-allowed;       /* Zeiger zeigt Sperrsymbol */
+  opacity: 0.7;
+}
+
+.print-button:hover,
+.bestatigen-button:hover {
   background: #e2e8f0;
 }
 

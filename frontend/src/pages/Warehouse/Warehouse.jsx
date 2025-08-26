@@ -1,18 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useProducts } from "../../context/ProductContext";
 import "./Warehouse.css";
-import Modal from "../../components/Modal"
-// Interne Modal-Komponente
+import Modal from "../../components/Modal";
 
 const Lager = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { products } = useProducts();
+
+  const [products, setProducts] = useState([]);
   const [monat, setMonat] = useState("");
   const [kundenId, setKundenId] = useState("");
   const [showModal, setShowModal] = useState(false);
+
+  // GET: Produkte beim Laden der Seite
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/warehouse");
+        if (!response.ok) throw new Error("Fehler beim Laden des Lagerbestands");
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Fehler beim Abrufen der Produkte:", err);
+        alert("Konnte Produkte nicht laden");
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const handleLieferscheinErstellen = () => {
     if (kundenId.trim() !== "") {
@@ -54,9 +69,7 @@ const Lager = () => {
         })
       });
 
-      if (!response.ok) {
-        throw new Error("Fehler beim Abrufen der Monatsrechnung");
-      }
+      if (!response.ok) throw new Error("Fehler beim Abrufen der Monatsrechnung");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -90,9 +103,7 @@ const Lager = () => {
         })
       });
 
-      if (!response.ok) {
-        throw new Error("Fehler beim Abrufen der Monatsrechnung");
-      }
+      if (!response.ok) throw new Error("Fehler beim Abrufen der Monatsrechnung");
 
       const html = await response.text();
 
@@ -110,6 +121,33 @@ const Lager = () => {
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  // POST: Eingang/Ausgang
+  const handleStockUpdate = async (artikel_id, menge, richtung) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/warehouse/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ artikel_id, menge, richtung })
+      });
+
+      if (!response.ok) throw new Error("Fehler beim Aktualisieren des Bestands");
+
+      const updatedProduct = await response.json();
+
+      // Update im Frontend-State
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === artikel_id
+            ? { ...p, bestand: updatedProduct.intStock } // Angenommen Backend liefert intStock zurück
+            : p
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Bestand konnte nicht aktualisiert werden");
+    }
   };
 
   return (
@@ -162,8 +200,24 @@ const Lager = () => {
                 <td>{p.bestand}</td>
                 <td>{p.einheit}</td>
                 <td>
-                  <button className="action-btn-eingang"> Eingang</button>
-                  <button className="action-btn-ausgang"> Ausgang</button>
+                  <button
+                    className="action-btn-eingang"
+                    onClick={() => {
+                      const menge = parseInt(prompt("Menge für Eingang eingeben:", "1"));
+                      if (!isNaN(menge) && menge > 0) handleStockUpdate(p.id, menge, "eingang");
+                    }}
+                  >
+                    Eingang
+                  </button>
+                  <button
+                    className="action-btn-ausgang"
+                    onClick={() => {
+                      const menge = parseInt(prompt("Menge für Ausgang eingeben:", "1"));
+                      if (!isNaN(menge) && menge > 0) handleStockUpdate(p.id, menge, "ausgang");
+                    }}
+                  >
+                    Ausgang
+                  </button>
                 </td>
               </tr>
             ))}
@@ -189,12 +243,12 @@ const Lager = () => {
           </label> 
         </div>
         <div className="modal-buttons">
-            <button className="print-button" onClick={handlePrint}>
-                🖨️ Drucken
-            </button>
-            <button className="review-button" onClick={handleReview}>
-                Vorschau
-            </button>
+          <button className="print-button" onClick={handlePrint}>
+            🖨️ Drucken
+          </button>
+          <button className="review-button" onClick={handleReview}>
+            Vorschau
+          </button>
         </div>
       </Modal>
     </div>
