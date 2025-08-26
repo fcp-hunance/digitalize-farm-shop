@@ -2,24 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
 
-const Kassier = ({ warenkorb, setWarenkorb }) => {
+const Kassier = ({warenkorb, setWarenkorb}) => {
   const navigate = useNavigate();
-
   const [produkte, setProdukte] = useState([]);
   const emojiMap = {
-  "Äpfel": "🍎",
-  "Kartoffeln": "🥔",
-  "Milch": "🥛",
-  "Brot": "🍞",
-  "Eier": "🥚",
-  "Fleisch": "🥩",
-  "Honig": "🍯",
-  "Mais": "🌽",
-  "Salat": "🥗",
-  "Möhren": "🥕",
-  "Brötchen": "🥯",
-  "Erdbeeren": "🍓",
-};
+    "Äpfel": "🍎",
+    "Kartoffeln": "🥔",
+    "Milch": "🥛",
+    "Brot": "🍞",
+    "Eier": "🥚",
+    "Fleisch": "🥩",
+    "Honig": "🍯",
+    "Mais": "🌽",
+    "Salat": "🥗",
+    "Möhren": "🥕",
+    "Brötchen": "🥯",
+    "Erdbeeren": "🍓",
+  };
   const [modalProdukt, setModalProdukt] = useState(null);
   const [menge, setMenge] = useState("");
   const [rabatt, setRabatt] = useState("");
@@ -112,9 +111,9 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
     setWarenkorb([]);
   };
 
-  const gesamtsumme = warenkorb
-    .reduce((sum, item) => sum + parseFloat(item.preis), 0)
-    .toFixed(2);
+  const gesamtsumme = warenkorb.length === 0 ? 0 
+  : warenkorb.reduce((sum, item) => sum + parseFloat(item.preis), 0).toFixed(2);
+
 
   const handleLogout = () => {
     setWarenkorb([]);
@@ -160,16 +159,18 @@ const Kassier = ({ warenkorb, setWarenkorb }) => {
         </ul>
 
         <h3>Gesamtsumme: {gesamtsumme} €</h3>
-
-        <button className="komplettstorno-button" onClick={komplettStorno}>
-          🗑 Storno
-        </button>
-        <button
-          className="zahlen-button"
-          onClick={() => navigate("/payment")}
-        >
-          💳 Bezahlen
-        </button>
+        <div className="kasse-btns">
+          <button className="komplettstorno-button" onClick={komplettStorno}>
+            🗑 Storno
+          </button>
+          <button
+            className="zahlen-button"
+            onClick={() => navigate("/payment")}
+            disabled={warenkorb.length === 0}
+          >
+            💳 Bezahlen
+          </button>  
+        </div>
       </div>
 
       {/* Modal */}
