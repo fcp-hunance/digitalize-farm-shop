@@ -235,11 +235,35 @@ curl -X POST http://localhost:3000/api/warehouse/update \
   -d '{"productID": 1, "menge": 5, "richtung": "ausgang"}'
 ```
 
-### Delivery
+### Order and Delivery Note
+Create order:
+Request
+POST http://localhost:3000/api/wareHouse/order
+```json
+{
+  "idCustomer": 1,
+  "items": [
+    { "idProduct": 1, "quantity": 5 },
+    { "idProduct": 2, "quantity": 2 }
+  ],
+  "decTotal": 30.5
+}
+```
+Response
+```json
+{
+    "success": true,
+    "idOrder": 10,
+    "idDeliveryNote": 9
+}
+```
+Generate Delivery Note
+Here is neccessary the idOrder
 ```
 POST http://localhost:3000/api/wareHouse/order/delivery.pdf
 POST http://localhost:3000/api/wareHouse/order/delivery.html
 ```
+Request
 ```json
 {
   "idOrder": 1
