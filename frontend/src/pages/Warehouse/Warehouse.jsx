@@ -32,14 +32,13 @@ const Lager = () => {
         const response = await fetch("http://localhost:3000/api/warehouse");
         if (!response.ok) throw new Error("Fehler beim Laden des Lagerbestands");
         const data = await response.json();
-
+        console.log(JSON.stringify(data))
         // Backend → Frontend Mapping
         const mappedProducts = data.map((p) => ({
-          id: p.idProduct,
-          name: p.strProductName,
-          preis: parseFloat(p.decPrice),
-          bestand: p.intStock,
-          einheit: mapUnit(p.fkUnit),
+          id: p.id,
+          name: p.name,
+          bestand: p.bestand,
+          einheit: mapUnit(p.einheit),
         }));
 
         setProducts(mappedProducts);
@@ -162,7 +161,7 @@ const Lager = () => {
       setProducts((prev) =>
         prev.map((p) =>
           p.id === artikel_id
-            ? { ...p, bestand: updatedProduct.intStock } // Angenommen Backend liefert intStock zurück
+            ? { ...p, bestand: updatedProduct.neuerBestand } // Angenommen Backend liefert intStock zurück
             : p
         )
       );
@@ -174,12 +173,12 @@ const Lager = () => {
 
   return (
     <div className="lager-container">
-      <header className="lager-header">
+      <div className="lager-header">
         <h1>📦 Lagerverwaltung</h1>
         <button className="logout-btn" onClick={handleLogout}>
           🚪 Abmelden
         </button>
-      </header>
+      </div>
 
       <div className="search-container">
         <input

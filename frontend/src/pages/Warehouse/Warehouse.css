@@ -23,6 +23,8 @@
 }
 
 .logout-btn {
+  margin-right: 0;
+  margin-left: auto;
   background: #256428;
   color: white;
   border: none;
