@@ -123,6 +123,14 @@
 .zahlen-button:hover {
   background-color: #1976d2;
 }
+
+.zahlen-button:disabled {
+  background-color: #cccccc;  /* grau */
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -187,7 +195,10 @@
   border-radius: 8px; 
   margin-bottom: 10px; 
 }
-
+.kasse-btns {
+  margin: auto;
+  width: fit-content;
+}
 .storno-button {
   margin-left: 10px;
   cursor: pointer;

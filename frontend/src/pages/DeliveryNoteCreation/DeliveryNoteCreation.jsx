@@ -7,27 +7,72 @@ const LieferscheinErstellen = () => {
   const navigate = useNavigate();
   const { kundenId } = useParams();
 
-  const produkte = [
-    { id: 1, name: "🍎 Äpfel", preis: 2.5, einheit: "kg" },
-    { id: 2, name: "🥔 Kartoffeln", preis: 1.8, einheit: "kg" },
-    { id: 3, name: "🥛 Milch", preis: 1.2, einheit: "l" },
-    { id: 4, name: "🍞 Brot", preis: 2.0, einheit: "Stück" },
-    { id: 5, name: "🥚 Eier", preis: 0.35, einheit: "Stück" },
-    { id: 6, name: "🥩 Fleisch", preis: 12.0, einheit: "kg" },
-    { id: 7, name: "🍯 Honig", preis: 4.5, einheit: "Stück" },
-    { id: 8, name: "🌽 Mais", preis: 1.2, einheit: "Stück" },
-    { id: 9, name: "🥗 Salat", preis: 1.5, einheit: "Stück" },
-    { id: 10, name: "🥕 Möhren", preis: 2.0, einheit: "kg" },
-    { id: 11, name: "🥯 Brötchen", preis: 0.4, einheit: "Stück" },
-    { id: 12, name: "🍓 Erdbeeren", preis: 4.5, einheit: "kg" },
-  ];
+  const [produkte, setProdukte] = useState([]);
+  const emojiMap = {
+    "Äpfel": "🍎",
+    "Kartoffeln": "🥔",
+    "Milch": "🥛",
+    "Brot": "🍞",
+    "Eier": "🥚",
+    "Fleisch": "🥩",
+    "Honig": "🍯",
+    "Mais": "🌽",
+    "Salat": "🥗",
+    "Möhren": "🥕",
+    "Brötchen": "🥯",
+    "Erdbeeren": "🍓",
+  };
 
   const [rechnungItems, setRechnungItems] = useState([]);
   const [modalProdukt, setModalProdukt] = useState(null);
   const [menge, setMenge] = useState("");
   const [rabatt, setRabatt] = useState("");
-  
   const [rechnungsRabatt, setRechnungsRabatt] = useState(0);
+  const [orderSubmitted, setOrderSubmitted] = useState(false);
+  const [orderData, setOrderData] = useState(null); 
+
+  useEffect(() =>  {
+    const fetchProdukte = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/cashDesk/products");
+        console.error(response);
+        if (!response.ok) {
+          throw new Error("Fehler beim Laden der Produkte");
+        }
+        const data = await response.json();
+
+        // Map API data to UI format
+        const mappedProdukte = data.map((item) => {
+          const emoji = emojiMap[item.strProductName] || ""; // fallback: no emoji
+          return {
+          id: item.idProduct,
+          name: `${emoji} ${item.strProductName}`,
+          preis: parseFloat(item.decPrice),
+          einheit: mapUnit(item.fkUnit),
+          };
+        });
+
+        setProdukte(mappedProdukte);
+      } catch (err) {
+        console.error("Fehler beim Laden der Produkte:", err);
+      }
+    };
+
+    fetchProdukte();
+  }, []);
+  
+  const mapUnit = (fkUnit) => {
+    switch (fkUnit) {
+      case 1:
+        return "kg";
+      case 2:
+        return "Stück";
+      case 3:
+        return "l";
+      default:
+        return "Stück";
+    }
+  };
 
   const berechnePreis = (produkt, menge) => {
     if (produkt.einheit === "kg") {
@@ -41,16 +86,18 @@ const LieferscheinErstellen = () => {
     let mengeNum = Number(menge);
     let rabattNum = Number(rabatt);
     if (!mengeNum || mengeNum <= 0) return;
-
     if (!rabattNum || rabattNum < 0) rabattNum = 0;
 
     let gesamtpreis = berechnePreis(modalProdukt, mengeNum) - rabattNum;
     if (gesamtpreis < 0) gesamtpreis = 0;
 
+    const mengeInEinheit = modalProdukt.einheit === "kg" ? mengeNum / 1000 : mengeNum; // convert g -> kg
+
     const neuerArtikel = {
+      id: modalProdukt.id,
       name: modalProdukt.name,
-      menge: mengeNum,
-      einheit: modalProdukt.einheit === "kg" ? "g" : modalProdukt.einheit,
+      menge: mengeInEinheit,
+      einheit: modalProdukt.einheit,
       rabatt: rabattNum,
       preis: gesamtpreis.toFixed(2),
     };
@@ -257,7 +304,7 @@ const handleLieferscheinDrucken = async () => {
           </div>
         </div>
 
-        <div className="rechnung-buttons">
+        <div className="lieferschein-buttons">
           <button className="komplettstorno-button" onClick={komplettStorno}>
             🗑 Storno
           </button>
