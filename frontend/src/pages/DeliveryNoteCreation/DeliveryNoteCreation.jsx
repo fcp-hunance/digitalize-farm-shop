@@ -80,20 +80,118 @@ const LieferscheinErstellen = () => {
   const handleLogout = () => {
     navigate("/");
   };
-  
-<<<<<<< HEAD
-  const handleRechnungDrucken = () => {
-=======
-  const handleLieferscheinDrucken = () => {
->>>>>>> backend
-    alert("Rechnung wird gedruckt und als PDF exportiert.");
-    komplettStorno();
-    navigate('/lager');
+ // Print Lieferschein 
+const handleLieferscheinDrucken = async () => {
+    if (rechnungItems.length === 0) {
+      alert("Die Rechnung ist leer. Bitte fügen Sie Produkte hinzu.");
+      return;
+    }
+
+    try {
+      const items = rechnungItems.map(item => {
+        const matchingProdukt = produkte.find(p => p.name === item.name);
+        return {
+          idProduct: matchingProdukt ? matchingProdukt.id : null,
+          quantity: item.menge,
+        };
+      });
+
+      const orderBody = {
+        idCustomer: parseInt(kundenId),
+        items,
+        decTotal: parseFloat(gesamtsummeNachRabatt),
+      };
+
+      const orderResponse = await fetch("http://localhost:3000/api/wareHouse/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderBody),
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error("Fehler beim Erstellen der Bestellung.");
+      }
+      
+      const orderData = await orderResponse.json();
+      const idOrder = orderData.idOrder;
+      const invoiceResponse = await fetch("http://localhost:3000/api/wareHouse/order/delivery.pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idOrder }),
+      });
+
+      if (!invoiceResponse.ok) {
+        throw new Error("Fehler beim Generieren des Lieferscheins.");
+      }
+      
+      const pdfBlob = await invoiceResponse.blob();
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+
+      komplettStorno();
+      navigate('/lager');
+
+    } catch (err) {
+      console.error(err);
+      alert("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
+    }
   };
-  
-  const handleLieferscheinPreview = () => { // Funktion für Review
-    alert("Vorschau der Rechnung wird angezeigt.");
-    //  später eine Modal- oder Detailansicht rendern bzw backend?
+
+  //Preview Lieferschein
+ const handleLieferscheinPreview = async () => {
+    if (rechnungItems.length === 0) {
+      alert("Der Lieferschein ist leer. Bitte fügen Sie Produkte hinzu.");
+      return;
+    }
+
+    try {
+      const items = rechnungItems.map(item => {
+        const matchingProdukt = produkte.find(p => p.name === item.name);
+        return {
+          idProduct: matchingProdukt ? matchingProdukt.id : null, 
+          quantity: item.menge,
+        };
+      });
+
+      const orderBody = {
+        idCustomer: parseInt(kundenId),
+        items,
+        decTotal: parseFloat(gesamtsummeNachRabatt),
+      };
+
+      const orderResponse = await fetch("http://localhost:3000/api/wareHouse/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderBody),
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error("Fehler beim Erstellen der Bestellung.");
+      }
+      
+      const orderData = await orderResponse.json();
+      const idOrder = orderData.idOrder;
+      const deliveryNoteResponse = await fetch("http://localhost:3000/api/wareHouse/order/delivery.html", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idOrder }),
+      });
+
+      if (!deliveryNoteResponse.ok) {
+        throw new Error("Fehler beim Generieren des Lieferscheins.");
+      }
+
+      const html = await deliveryNoteResponse.text();
+      const newWindow = window.open();
+      newWindow.document.write(html);
+      newWindow.document.close();
+      
+     
+
+    } catch (err) {
+      console.error(err);
+      alert("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
+    }
   };
 
   return (
@@ -163,10 +261,10 @@ const LieferscheinErstellen = () => {
           <button className="komplettstorno-button" onClick={komplettStorno}>
             🗑 Storno
           </button>
-          <button className="print-button" onClick={handleRechnungDrucken}>
-            🖨️ Rechnung drucken
+          <button className="print-button" onClick={handleLieferscheinDrucken}>
+            🖨️ Lieferschein drucken
           </button>
-          <button className="review-button" onClick={handleReview}>
+          <button className="review-button" onClick={handleLieferscheinPreview}>
             Vorschau
           </button>
           <button className="back-button" onClick={() => navigate("/lager")}>
