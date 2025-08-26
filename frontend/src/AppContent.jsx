@@ -5,11 +5,11 @@ import { useProducts } from './context/ProductContext';
 import LockScreen from './components/LockScreen/LockScreen';
 import Login from './components/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
-import Kassier from './pages/Kassier/Kassier';
-import Lager from './pages/Lager/Lager';
+import Kassier from './pages/Checkout/Checkout';
+import Lager from './pages/Warehouse/Warehouse';
 import Payment from './pages/Payment/Payment';
 import DeliveryNote from './pages/DeliveryNote/DeliveryNote';
-import RechnungErstellen from './pages/LieferscheinErstellen/LieferscheinErstellen';
+import RechnungErstellen from './pages/DeliveryNoteCreation/DeliveryNoteCreation';
 import ManageEmployees from './pages/ManageEmployees/ManageEmployees';
 import WarehouseManagement from './pages/WarehouseManagement/WarehouseManagement';
 
