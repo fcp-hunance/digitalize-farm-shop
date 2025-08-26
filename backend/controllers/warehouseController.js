@@ -59,7 +59,7 @@ async function updateIntStock(req, res) {
 
 async function addProduct(req, res) {
   try {
-    const { name, preis = 0, initialerBestand = 0 } = req.body;
+    const { name, preis = 0, initialerBestand = 0 ,fkUnit = 0 } = req.body;
 
    // if (!artikelnummer ||  strProductName) {
    //   return res.status(400).json({ error: "Artikelnummer und strProductName sind erforderlich" });
@@ -72,7 +72,9 @@ async function addProduct(req, res) {
     const neuesProdukt = await warehouseService.addProduct({
       name,
       preis,
-      intStock: initialerBestand
+      intStock: initialerBestand,
+      fkUnit
+
     });
 
     res.status(201).json({
@@ -108,7 +110,40 @@ async function deleteProduct(req, res) {
     res.status(500).json({ error: "Interner Serverfehler", details: err.message });
   }
 }
+
+async function getAllProducts(req, res) {
+  try {
+    const produkte = await warehouseService.getAllProducts();
+
+    // falls dein Service Felder wie intStock / fkUnit liefert,
+    // kannst du sie hier bei Bedarf noch ins Frontend-Format mappen
+    const mappedProdukte = produkte.map(p => ({
+      id: p.idProduct,
+      name: p.strProductName,
+      bestand: p.intStock,
+      einheit: mapUnit(p.fkUnit)
+    }));
+
+    res.json(mappedProdukte);
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Produkte:", error);
+    res.status(500).json({ error: "Fehler beim Abrufen der Produkte" });
+  }
+}
+
+// Hilfsfunktion: fkUnit → Einheit-String
+function mapUnit(fkUnit) {
+  switch (fkUnit) {
+    case 1: return "kg";
+    case 2: return "Stück";
+    case 3: return "l";
+    default: return "";
+  }
+}
+
+
 module.exports = {
+  getAllProducts,
   getIntStock,
   updateIntStock,
   addProduct,
