@@ -254,7 +254,6 @@
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.3s ease;
-  margin-left: 700px;
 }
 
 .logout-button:hover {
