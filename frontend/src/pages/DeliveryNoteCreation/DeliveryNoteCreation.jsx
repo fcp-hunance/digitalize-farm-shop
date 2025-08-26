@@ -81,13 +81,17 @@ const LieferscheinErstellen = () => {
     navigate("/");
   };
   
+<<<<<<< HEAD
   const handleRechnungDrucken = () => {
+=======
+  const handleLieferscheinDrucken = () => {
+>>>>>>> backend
     alert("Rechnung wird gedruckt und als PDF exportiert.");
     komplettStorno();
     navigate('/lager');
   };
   
-  const handleReview = () => { // Funktion für Review
+  const handleLieferscheinPreview = () => { // Funktion für Review
     alert("Vorschau der Rechnung wird angezeigt.");
     //  später eine Modal- oder Detailansicht rendern bzw backend?
   };
