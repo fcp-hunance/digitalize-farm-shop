@@ -79,14 +79,14 @@ export const AuthProvider = ({ children }) => {
   //   setEmployees(employees.map(emp => (emp.id === id ? { ...emp, password: newPassword } : emp)));
   // };
 
-  // const unlockScreen = (pin) => {
-  //   const employee = employees.find(emp => emp.pin === pin);
-  //   if (employee) {
-  //       setIsLocked(false);
-  //       return true;
-  //   }
-  //   return false;
-  // };
+  const unlockScreen = (pin) => {
+    const employee = employees.find(emp => emp.pin === pin);
+    if (employee) {
+        setIsLocked(false);
+        return true;
+    }
+    return false;
+  };
   
   // USEEFFECT-HOOK FÜR TIMER
   useEffect(() => {
@@ -142,7 +142,7 @@ export const AuthProvider = ({ children }) => {
         // resetPin,
         // resetPassword,
         // isLocked,
-        // unlockScreen
+        unlockScreen
       }}
     >
       {!loading && children}
