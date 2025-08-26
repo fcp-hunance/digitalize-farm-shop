@@ -25,7 +25,7 @@ const Lager = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { products } = useProducts();
-
+  const [monat, setMonat] = useState("");
   const [kundenId, setKundenId] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -53,14 +53,73 @@ const Lager = () => {
     }
   };
   
-  const handlePrint = () => {
-      alert("Monatsrechnung wird gedruckt...");
+  const handlePrint = async () => {
+    if (!monat) {
+      alert("Bitte wählen Sie einen Monat aus (YYYY-MM).");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/api/invoice/invoice.pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: parseInt(kundenId),
+          month: monat
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Fehler beim Abrufen der Monatsrechnung");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Rechnung_${kundenId}_${monat}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+
       setShowModal(false);
+    } catch (err) {
+      console.error("Fehler beim Laden der Monatsrechnung:", err);
+      alert("Fehler beim Laden der Monatsrechnung");
+    }
   };
   
-  const handleReview = () => {
-      alert("Vorschau wird geschlossen.");
+  const handleReview = async () => {
+    if (!monat) {
+      alert("Bitte wählen Sie einen Monat aus (YYYY-MM).");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/api/invoice/invoice.html", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: parseInt(kundenId),
+          month: monat
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Fehler beim Abrufen der Monatsrechnung");
+      }
+
+      const html = await response.text();
+
+      // Vorschau in neuem Tab öffnen
+      const previewWindow = window.open("", "_blank");
+      previewWindow.document.write(html);
+      previewWindow.document.close();
       setShowModal(false);
+    } catch (err) {
+      console.error("Fehler beim Laden der Monatsrechnung:", err);
+      alert("Fehler beim Laden der Monatsrechnung");
+    }
   };
   
   const handleLogout = () => {
@@ -132,15 +191,17 @@ const Lager = () => {
         onClose={() => setShowModal(false)}
         title={`Monatsrechnung für Kunden-ID: ${kundenId}`}
       >
-        <div className="monatsrechnung-inhalt">
-            <h3>Produkte auf Rechnung:</h3>
-            <ul>
-                {products.map((p) => (
-                    <li key={p.id}>
-                        {p.name} - {p.bestand} {p.einheit}
-                    </li>
-                ))}
-            </ul>
+        <div className="monatsrechnung-inhalt" style={{ width: "fit-content", margin: "auto" }}>
+          <label>
+            Monat wählen (YYYY-MM):
+            <input
+              type="month"
+              value={monat}
+              onChange={(e) => setMonat(e.target.value)}
+              className="month-input"
+              style={{ marginLeft: "10px" }} 
+            />
+          </label> 
         </div>
         <div className="modal-buttons">
             <button className="print-button" onClick={handlePrint}>
