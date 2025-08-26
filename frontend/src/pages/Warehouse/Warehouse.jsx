@@ -12,6 +12,18 @@ const Lager = () => {
   const [monat, setMonat] = useState("");
   const [kundenId, setKundenId] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const mapUnit = (fkUnit) => {
+      switch (fkUnit) {
+        case 1:
+          return "kg";
+        case 2:
+          return "Stück";
+        case 3:
+          return "l";
+        default:
+          return "Stück";
+      }
+    };
 
   // GET: Produkte beim Laden der Seite
   useEffect(() => {
@@ -20,7 +32,17 @@ const Lager = () => {
         const response = await fetch("http://localhost:3000/api/warehouse");
         if (!response.ok) throw new Error("Fehler beim Laden des Lagerbestands");
         const data = await response.json();
-        setProducts(data);
+
+        // Backend → Frontend Mapping
+        const mappedProducts = data.map((p) => ({
+          id: p.idProduct,
+          name: p.strProductName,
+          preis: parseFloat(p.decPrice),
+          bestand: p.intStock,
+          einheit: mapUnit(p.fkUnit),
+        }));
+
+        setProducts(mappedProducts);
       } catch (err) {
         console.error("Fehler beim Abrufen der Produkte:", err);
         alert("Konnte Produkte nicht laden");
