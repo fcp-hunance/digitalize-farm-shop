@@ -1,0 +1,67 @@
+import React, { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
+
+const SalesDashboard = () => {
+  const [sales, setSales] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/sales")
+      .then((res) => {
+        if (!res.ok) throw new Error("Fehler beim Laden der Daten");
+        return res.json();
+      })
+      .then((data) => {
+        setSales(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div>Lade Daten...</div>;
+  if (error) return <div>Fehler: {error}</div>;
+
+  const productNames = sales.map((item) => item.productName);
+  const productCounts = sales.map((item) => item.count);
+
+  const data = {
+    labels: productNames,
+    datasets: [
+      {
+        label: "Verkaufte Produkte",
+        data: productCounts,
+        backgroundColor: "rgba(75,192,192,0.6)",
+      },
+    ],
+  };
+
+  return (
+    <div>
+      <h2>Dashboard: Verkaufte Produkte</h2>
+      <Bar data={data} />
+      <table>
+        <thead>
+          <tr>
+            <th>Produkt</th>
+            <th>Anzahl verkauft</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sales.map((item) => (
+            <tr key={item.productId}>
+              <td>{item.productName}</td>
+              <td>{item.count}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default SalesDashboard;
