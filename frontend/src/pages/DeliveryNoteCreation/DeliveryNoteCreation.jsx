@@ -91,7 +91,11 @@ const LieferscheinErstellen = () => {
     let gesamtpreis = berechnePreis(modalProdukt, mengeNum) - rabattNum;
     if (gesamtpreis < 0) gesamtpreis = 0;
 
-    const mengeInEinheit = modalProdukt.einheit === "kg" ? mengeNum / 1000 : mengeNum; // convert g -> kg
+    const mengeInEinheit = modalProdukt.einheit === "kg" ?
+      Number((mengeNum / 1000).toFixed(3))
+      : mengeNum; // convert g -> kg
+
+    console.log("mengeInEinheit (to send):", mengeInEinheit);
 
     const neuerArtikel = {
       id: modalProdukt.id,
@@ -101,6 +105,8 @@ const LieferscheinErstellen = () => {
       rabatt: rabattNum,
       preis: gesamtpreis.toFixed(2),
     };
+
+    console.log("neuerArtikel object:", neuerArtikel);
 
     setRechnungItems([...rechnungItems, neuerArtikel]);
     setModalProdukt(null);
@@ -127,8 +133,54 @@ const LieferscheinErstellen = () => {
   const handleLogout = () => {
     navigate("/");
   };
+
+  const handleBestatigen = async () => {
+    if (rechnungItems.length === 0) {
+      alert("⚠️ Es können keine Bestellungen ohne Produkte eingereicht werden!");
+      return;
+    }
+    try {
+      const items = rechnungItems.map(item => {
+        const matchingProdukt = produkte.find(p => p.name === item.name);
+        console.log("Item before sending:", item); // check item.menge here
+        return {
+          idProduct: matchingProdukt ? matchingProdukt.id : null,
+          quantity: item.menge,
+        };
+      });
+
+      const body = {
+        idCustomer: Number(kundenId), // nutze KundenId aus useParams
+        items: rechnungItems.map((item) => ({
+          idProduct: item.id,
+          quantity: item.menge,
+        })),
+        decTotal: parseFloat(gesamtsummeNachRabatt),
+      };
+
+      console.log("Order body to send:", body);
+      
+      const response = await fetch("http://localhost:3000/api/wareHouse/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        throw new Error("Fehler beim Absenden der Bestellung");
+      }
+
+      const data = await response.json();
+      alert("Bestellung eingereicht ✅");
+      setOrderData(data); 
+      setOrderSubmitted(true);
+    } catch (err) {
+      alert("❌ Fehler beim Absenden: " + err.message);
+    }
+  };
+
  // Print Lieferschein 
-const handleLieferscheinDrucken = async () => {
+  const handleLieferscheinDrucken = async () => {
     if (rechnungItems.length === 0) {
       alert("Die Rechnung ist leer. Bitte fügen Sie Produkte hinzu.");
       return;
@@ -199,7 +251,7 @@ const handleLieferscheinDrucken = async () => {
           quantity: item.menge,
         };
       });
-
+      console.log(items.toString);
       const orderBody = {
         idCustomer: parseInt(kundenId),
         items,
@@ -308,12 +360,24 @@ const handleLieferscheinDrucken = async () => {
           <button className="komplettstorno-button" onClick={komplettStorno}>
             🗑 Storno
           </button>
-          <button className="print-button" onClick={handleLieferscheinDrucken}>
-            🖨️ Lieferschein drucken
-          </button>
-          <button className="review-button" onClick={handleLieferscheinPreview}>
-            Vorschau
-          </button>
+          {orderSubmitted ? (
+            <>
+              <button className="print-button" onClick={handleLieferscheinDrucken}>
+                🖨️ Rechnung drucken
+              </button>
+              <button className="review-button" onClick={handleLieferscheinPreview}>
+                Vorschau
+              </button>
+            </>
+          ) : (
+            <button
+              className="bestatigen-button"
+              onClick={handleBestatigen}
+              disabled={rechnungItems.length === 0}
+            >
+              ✅ Bestätigen
+            </button>
+          )}
           <button className="back-button" onClick={() => navigate("/lager")}>
             🔙 Zurück
           </button>

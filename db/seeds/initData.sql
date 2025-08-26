@@ -39,10 +39,6 @@ INSERT INTO `t_MajorCustomer` (`idCustomer`, `strAddress`, `strPhone`, `strEmail
     (2, 'Gartenweg 2, Beispielort', '0987654321', 'birgitt@example.com'),
     (3, 'Dorfplatz 5, Kleinstadt', '0112233445', 'hans@example.com');
 
--- Users (bcrypt hash placeholders, role added)
-INSERT INTO `t_User` (`idUser`, `fkPerson`, `strUsername`, `strPasswordHash`, `strPIN`, `strRole`) VALUES
-    (1, 1, 'Hans', 'admin', NULL, 'admin'); -- It's necessary to create the Hashed Password first desactivating the token control in backend.
-
 -- VAT Rates
 INSERT INTO `t_Vat` (`idVAT`, `decTaxRate`, `dateValidFrom`, `dateValidUntil`) VALUES
     (1, 7.00, '2020-01-01', NULL),

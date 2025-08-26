@@ -7,9 +7,10 @@ const ejs = require("ejs");
 
 // Controller to create an order and its delivery note
 async function createOrderController(req, res) {
+  console.log("Request body received:", req.body);
   try {
     const { idCustomer, items, decTotal } = req.body;
-
+    console.log("Items in backend:", items);
     // Create order, add products, and generate delivery note
     const { idOrder, idDeliveryNote } = await orderRepo.createOrderWithDelivery(idCustomer, items, decTotal);
     res.status(201).json({success: true, idOrder, idDeliveryNote})

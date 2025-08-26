@@ -13,7 +13,7 @@ async function createOrderWithDelivery(idCustomer, items, decTotal) {
   // 2. Add products to the order
   for (const item of items) {
     await query(
-      `INSERT INTO t_Product_Order (fkProduct, fkOrder, intQuantity) VALUES (?, ?, ?)`,
+      `INSERT INTO t_Product_Order (fkProduct, fkOrder, decQuantity) VALUES (?, ?, ?)`,
       [item.idProduct, idOrder, item.quantity]
     );
   }
@@ -112,14 +112,17 @@ async function getOrderById(idOrder) {
 
   // 2. Fetch products for this order
   const products = await query(
-    `SELECT p.idProduct, p.strProductName AS productName, po.intQuantity, u.strUnit AS unit
+    `SELECT p.idProduct, p.strProductName AS productName, po.decQuantity, u.strUnit AS unit
      FROM t_Product_Order po
      JOIN t_Product p ON po.fkProduct = p.idProduct
      LEFT JOIN t_Unit u ON p.fkUnit = u.idUnit
      WHERE po.fkOrder = ?`,
     [idOrder]
   );
+  console.log("Fetched order items for EJS:", products);
 
+
+  
   return {
     idOrder: order.idOrder,
     orderDate: formatDate(order.dateOrderDate),
@@ -130,12 +133,17 @@ async function getOrderById(idOrder) {
       phone: order.customerPhone,
       email: order.customerEmail
     },
-    items: products.map(p => ({
-      productId: p.idProduct,
-      productName: p.productName,
-      quantity: p.intQuantity,
-      unit: p.unit
-    }))
+    items: products.map(p => {
+      const qty = parseFloat(p.decQuantity);
+      // Convert to string with comma as decimal separator
+      const qtyStr = qty.toString().replace(".", ",");
+      return {
+        productId: p.idProduct,
+        productName: p.productName,
+        quantity: qtyStr,
+        unit: p.unit
+      };
+    })
   };
 }
 
