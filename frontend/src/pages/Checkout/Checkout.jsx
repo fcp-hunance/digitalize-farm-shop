@@ -123,7 +123,7 @@ const Kassier = ({warenkorb, setWarenkorb}) => {
   return (
     <div className="kassier-container">
       <div className="header-bar">
-        <h1>🛒 Biohofladen Schlarb</h1>
+        <h1>🛒 Biohofladen Hahn</h1>
         <button className="logout-button" onClick={handleLogout}>
           🚪 Logout
         </button>
