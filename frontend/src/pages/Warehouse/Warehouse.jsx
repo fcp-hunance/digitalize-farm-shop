@@ -2,7 +2,24 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useProducts } from "../../context/ProductContext";
-import "./Lager.css";
+import "./Warehouse.css";
+
+// Interne Modal-Komponente
+const Modal = ({ show, onClose, title, children }) => {
+  if (!show) {
+    return null;
+  }
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h4 className="modal-title">{title}</h4>
+        </div>
+        <div className="modal-body">{children}</div>
+      </div>
+    </div>
+  );
+};
 
 const Lager = () => {
   const navigate = useNavigate();
@@ -10,6 +27,7 @@ const Lager = () => {
   const { products } = useProducts();
 
   const [kundenId, setKundenId] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const handleLieferscheinErstellen = () => {
     if (kundenId.trim() !== "") {
@@ -25,6 +43,24 @@ const Lager = () => {
     } else {
       alert("Bitte geben Sie eine Kunden-ID ein.");
     }
+  };
+  
+  const handleMonatsrechnung = () => {
+    if (kundenId.trim() !== "") {
+      setShowModal(true);
+    } else {
+      alert("Bitte geben Sie eine Kunden-ID ein.");
+    }
+  };
+  
+  const handlePrint = () => {
+      alert("Monatsrechnung wird gedruckt...");
+      setShowModal(false);
+  };
+  
+  const handleReview = () => {
+      alert("Vorschau wird geschlossen.");
+      setShowModal(false);
   };
   
   const handleLogout = () => {
@@ -55,6 +91,9 @@ const Lager = () => {
           </button>
           <button className="search-btn" onClick={handleBestellungEinsehen}>
             Bestellungen einsehen
+          </button>
+          <button className="search-btn" onClick={handleMonatsrechnung}>
+            Monatsrechnung
           </button>
         </div>
       </div>
@@ -87,6 +126,31 @@ const Lager = () => {
           </tbody>
         </table>
       </div>
+      
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title={`Monatsrechnung für Kunden-ID: ${kundenId}`}
+      >
+        <div className="monatsrechnung-inhalt">
+            <h3>Produkte auf Rechnung:</h3>
+            <ul>
+                {products.map((p) => (
+                    <li key={p.id}>
+                        {p.name} - {p.bestand} {p.einheit}
+                    </li>
+                ))}
+            </ul>
+        </div>
+        <div className="modal-buttons">
+            <button className="print-button" onClick={handlePrint}>
+                🖨️ Drucken
+            </button>
+            <button className="review-button" onClick={handleReview}>
+                Vorschau
+            </button>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -50,7 +50,79 @@ async function updateIntStock(productID, menge, richtung) {
   return neueIntStock;
 }
 
+async function addProduct(productData) {
+  const {  name, preis, intStock } = productData;
+
+  // Prüfen ob Artikelnummer bereits existiert
+  //const existingProduct = await db.query(
+  //  "SELECT idProduct FROM t_product WHERE artikelnummer = ?",
+  //  [artikelnummer]
+  //);
+
+  // const rows = extractRows(existingProduct);
+  
+  // if (rows && rows.length > 0) {
+  //   throw new Error("Artikelnummer ist bereits vorhanden");
+  // }
+
+  // Artikel einfügen
+  const result = await db.query(
+    "INSERT INTO t_product (strProductName, decPrice, intStock) VALUES (?, ?, ?)",
+    [ name, preis, intStock]
+  );
+
+  // Neuen Artikel mit ID abrufen
+  const newProduct = await db.query(
+    "SELECT idProduct, strProductName, decPrice, intStock FROM t_product WHERE idProduct = ?",
+    [result.insertId]
+  );
+
+  const newRows = extractRows(newProduct);
+  
+  if (!newRows || newRows.length === 0) {
+    throw new Error("Fehler beim Erstellen des Artikels");
+  }
+
+  return newRows[0];
+}
+
+/**
+ * Löscht einen Artikel
+ */
+async function deleteProduct(productID) {
+  // Prüfen ob Artikel existiert
+  const existingProduct = await db.query(
+    "SELECT idProduct FROM t_product WHERE idProduct = ?",
+    [productID]
+  );
+
+  const rows = extractRows(existingProduct);
+  
+  if (!rows || rows.length === 0) {
+    throw new Error("Artikel nicht gefunden");
+  }
+
+  // Artikel löschen
+  await db.query(
+    "DELETE FROM t_product WHERE idProduct = ?",
+    [productID]
+  );
+}
+
+/**
+ * Hilfsfunktion zum Extrahieren von Rows aus verschiedenen DB-Result-Formaten
+ */
+function extractRows(result) {
+  return Array.isArray(result) && result.length > 0 && Array.isArray(result[0]) ? result[0] :
+         Array.isArray(result) ? result :
+         result.rows ? result.rows :
+         result;
+}
+
 module.exports = {
   getIntStock,
   updateIntStock,
+  addProduct,
+  deleteProduct,
+  extractRows // für Wiederverwendung exportieren
 };

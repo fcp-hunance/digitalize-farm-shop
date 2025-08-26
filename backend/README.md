@@ -25,7 +25,8 @@ cp .env.example .env
 4. Run migrations (if applicable):   
 ```bash
 mysql -u user -p digitalize_farm_shop < db/schema.sql
-mysql -u user -p digitalize_farm_shop < db/migrations/20250721_add_column.sql
+mysql -u user -p digitalize_farm_shop < db/seeds/initData.sql
+mysql -u user -p digitalize_farm_shop < db/migrations/.
 ```
 ## Running the server
 Development mode (with hot reload via nodemon):
@@ -33,7 +34,7 @@ Development mode (with hot reload via nodemon):
 npm run dev
 ```
 Production mode:
-```
+```bash
 npm start
 ```
 ## 📁 Project Structure
@@ -79,7 +80,7 @@ POST http://localhost:3000/api/auth/register
 }
 ```
 The password will be hashed and stored in the database along with a unique ID and the username.
-The user data is saved in a table called cashiers. (This table name can be changed later if needed.)
+The user data is saved in a table called t_user. (This table name can be changed later if needed.)
 
 
 ### 2. Login
@@ -244,12 +245,10 @@ POST http://localhost:3000/api/wareHouse/order/delivery.html
   "idOrder": 1
 }
 ```
-```
 ### 5. Generate Monthly Invoice
 This route create the invoice in PDF, or a preview in HTML:
 POST http://localhost:3000/api/invoice/monthly.pdf or http://localhost:3000/api/invoice/monthly.html
 In body the items list:
-```
 ```json
 {
   "customerId": 1,
@@ -367,7 +366,7 @@ Response:
 
 
 ## Notes
-Should we put all the DB Logic in a File? Maybe could Cantez complete this with all needed SQL Queries.
+
 ## Testing
     Add testing instructions here (if tests are implemented for exampled with POSTMAN).
 ## License   

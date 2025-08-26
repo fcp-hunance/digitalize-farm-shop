@@ -57,12 +57,60 @@ async function updateIntStock(req, res) {
   }
 }
 
-// ...existing code...
-const salesRoutes = require("./routes/sales");
-app.use("/api/sales", salesRoutes);
-// ...existing code...
+async function addProduct(req, res) {
+  try {
+    const { name, preis = 0, initialerBestand = 0 } = req.body;
 
+   // if (!artikelnummer ||  strProductName) {
+   //   return res.status(400).json({ error: "Artikelnummer und strProductName sind erforderlich" });
+   // }
+
+    if (initialerBestand < 0) {
+      return res.status(400).json({ error: "Initialer Bestand darf nicht negativ sein" });
+    }
+
+    const neuesProdukt = await warehouseService.addProduct({
+      name,
+      preis,
+      intStock: initialerBestand
+    });
+
+    res.status(201).json({
+      message: "Artikel erfolgreich hinzugefügt",
+      produkt: neuesProdukt
+    });
+  } catch (err) {
+    if (err.message.includes("bereits vorhanden")) {
+      return res.status(409).json({ error: err.message });
+    }
+    res.status(500).json({ error: "Interner Serverfehler", details: err.message });
+  }
+}
+
+async function deleteProduct(req, res) {
+  try {
+    const productID = parseInt(req.params.artikel_id, 10);
+    
+    if (isNaN(productID)) {
+      return res.status(400).json({ error: "Ungültige Artikel-ID" });
+    }
+
+    await warehouseService.deleteProduct(productID);
+
+    res.json({ 
+      message: "Artikel erfolgreich gelöscht",
+      artikel_id: productID
+    });
+  } catch (err) {
+    if (err.message.includes("nicht gefunden")) {
+      return res.status(404).json({ error: err.message });
+    }
+    res.status(500).json({ error: "Interner Serverfehler", details: err.message });
+  }
+}
 module.exports = {
- getIntStock,
- updateIntStock,
+  getIntStock,
+  updateIntStock,
+  addProduct,
+  deleteProduct
 };

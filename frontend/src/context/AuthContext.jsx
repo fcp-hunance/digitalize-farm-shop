@@ -13,30 +13,46 @@ export const AuthProvider = ({ children }) => {
   const [modalMessage, setModalMessage] = useState("");
   const location = useLocation();
   
-  // ✅ Neu: Ein Ref zur Speicherung des Timers
+  // Ein Ref zur Speicherung des Timers
   const timeoutRef = useRef(null);
 
   const [employees, setEmployees] = useState([
-    { id: 1, name: "Max Mustermann", pin: "1234", password: "password123", role: "Admin" },
-    { id: 2, name: "Erika Mustermann", pin: "5678", password: "password123", role: "Kassier" },
-    { id: 3, name: "John Doe", pin: "9012", password: "password123", role: "Lagerist" },
+    { id: 1, name: "Hans", pin: "1234", password: "1234", role: "admin" },
+    { id: 2, name: "Sandra", pin: "1234", password: "1234", role: "cashier" },
+    { id: 3, name: "Petra", pin: "1234", password: "1234", role: "cashier" },
+    { id: 4, name: "Thomas", pin: "1234", password: "1234", role: "warehouse" },
   ]);
 
   const [isLocked, setIsLocked] = useState(false);
   const LOCK_TIMEOUT = 1 * 60 * 1000; // 1 Minute zum Testen
 
-  const login = (username, password) => {
-    const foundUser = employees.find(
-      (emp) => emp.name === username && emp.password === password
-    );
-    if (foundUser) {
-      setUser(foundUser.name);
-      setRoleContext(foundUser.role);
-      setAuth({ token: "dummy-token" });
-      return true;
+  const login = async (username, password) => {
+  try {
+    const response = await axios.post("http://localhost:3000/api/auth/login", {
+      username,
+      password,
+    });
+    console.log("Login. Response from backend: "+JSON.stringify(response.data));
+
+    if (response.status === 200) {
+      const data = response.data;
+
+      // Save user info in context
+      setUser(data.user);
+      setRoleContext(data.role);
+      setAuth({ token: data.token });
+
+      // Optionally store token in localStorage
+      localStorage.setItem("token", data.token);
+
+      return data;
     }
+  } catch (err) {
+    console.error("Login fehlgeschlagen:", err);
     return false;
-  };
+  }
+};
+
 
   const logout = (message) => {
     setModalMessage(message);
@@ -47,32 +63,32 @@ export const AuthProvider = ({ children }) => {
     clearTimeout(timeoutRef.current);
   };
   
-  const addEmployee = (newEmployee) => {
-    setEmployees([...employees, newEmployee]);
-  };
+  // const addEmployee = (newEmployee) => {
+  //   setEmployees([...employees, newEmployee]);
+  // };
 
-  const deleteEmployee = (id) => {
-    setEmployees(employees.filter(emp => emp.id !== id));
-  };
+  // const deleteEmployee = (id) => {
+  //   setEmployees(employees.filter(emp => emp.id !== id));
+  // };
 
-  const resetPin = (id, newPin) => {
-    setEmployees(employees.map(emp => (emp.id === id ? { ...emp, pin: newPin } : emp)));
-  };
+  // const resetPin = (id, newPin) => {
+  //   setEmployees(employees.map(emp => (emp.id === id ? { ...emp, pin: newPin } : emp)));
+  // };
 
-  const resetPassword = (id, newPassword) => {
-    setEmployees(employees.map(emp => (emp.id === id ? { ...emp, password: newPassword } : emp)));
-  };
+  // const resetPassword = (id, newPassword) => {
+  //   setEmployees(employees.map(emp => (emp.id === id ? { ...emp, password: newPassword } : emp)));
+  // };
 
-  const unlockScreen = (pin) => {
-    const employee = employees.find(emp => emp.pin === pin);
-    if (employee) {
-        setIsLocked(false);
-        return true;
-    }
-    return false;
-  };
+  // const unlockScreen = (pin) => {
+  //   const employee = employees.find(emp => emp.pin === pin);
+  //   if (employee) {
+  //       setIsLocked(false);
+  //       return true;
+  //   }
+  //   return false;
+  // };
   
-  // ✅ KORRIGIERTER USEEFFECT-HOOK FÜR TIMER
+  // USEEFFECT-HOOK FÜR TIMER
   useEffect(() => {
     let timer;
 
@@ -105,7 +121,7 @@ export const AuthProvider = ({ children }) => {
       window.removeEventListener('keypress', handleActivity);
       window.removeEventListener('click', handleActivity);
     };
-  }, [user, isLocked]); // Abhängigkeiten korrigiert
+  }, [user, isLocked]); // Abhängigkeiten 
 
   useEffect(() => {
     setLoading(false);
@@ -120,13 +136,13 @@ export const AuthProvider = ({ children }) => {
         login, 
         logout, 
         modalMessage,
-        employees,
-        addEmployee,
-        deleteEmployee,
-        resetPin,
-        resetPassword,
-        isLocked,
-        unlockScreen
+        // employees,
+        // addEmployee,
+        // deleteEmployee,
+        // resetPin,
+        // resetPassword,
+        // isLocked,
+        // unlockScreen
       }}
     >
       {!loading && children}

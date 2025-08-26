@@ -146,6 +146,7 @@ async function previewReceipt(req, res) {
       return {
         idProduct: it.idProduct,
         qty: it.quantity,
+        unit: it.unit,
         name: product?.name || "Artikel",
         price: product?.price || 0,
         lineTotal: +(product?.price * it.quantity || 0).toFixed(2)

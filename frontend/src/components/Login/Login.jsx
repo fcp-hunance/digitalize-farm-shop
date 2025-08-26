@@ -7,24 +7,30 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { login, employees } = useAuth();
+  const { login, roleContext } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (login(username, password)) {
-      const loggedInUser = employees.find(emp => emp.name === username);
-      if (loggedInUser.role === "Admin") {
+    const data = await login(username, password);
+    if (!data) {
+      alert("❌ Login fehlgeschlagen");
+      return;
+    }
+
+    // redirect based on role from response
+    switch (data.role) {
+      case "admin":
         navigate("/dashboard");
-      } else if (loggedInUser.role === "Kassier") {
+        break;
+      case "cashier":
         navigate("/kassier");
-      } else if (loggedInUser.role === "Lagerist") {
+        break;
+      case "warehouse":
         navigate("/lager");
-      } else {
+        break;
+      default:
         alert("❌ Unbekannte Rolle");
-      }
-    } else {
-      alert("❌ Falsche Login-Daten");
     }
   };
 
