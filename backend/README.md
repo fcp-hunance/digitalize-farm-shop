@@ -18,17 +18,20 @@ Es stellt REST-APIs für Kasse, Lager, Benutzerverwaltung, Rechnungen, Quittunge
 1. Zum Backend-Ordner wechseln:
 ```bash
 cd backend
-Abhängigkeiten installieren:
 ```
+Abhängigkeiten installieren:
+
 ```bash
 
 npm install
-Umgebungsvariablen konfigurieren:
 ```
+Umgebungsvariablen konfigurieren:
+
 ```bash
 cp .env.example .env
-Trage anschließend DB-Credentials, Port, JWT-Secret etc. ein.
 ```
+Trage anschließend DB-Credentials, Port, JWT-Secret etc. ein.
+
 Datenbank einrichten:
 
 ```bash
