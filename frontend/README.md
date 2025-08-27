@@ -51,15 +51,28 @@ The application will be available at http://localhost:5173 or a similar port.
 
 ## Usage
 
-### Login Credentials (Dummy)
+### Login Credentials 
 Use these details to log in with different roles:
 
 | Username |	Password |	Role	| Access Page |
 |---|---|---|---|
-| `Max Mustermann`| `password123` |	`Admin` |	`Dashboard` |
-| `Erika Mustermann`| `password123` |	`Kassiererin` |	`Kasse` |
-| `John Doe`| `password123` |	`Lagerist` |	`Lager` |
+| `Hans`| `1234` |	`Admin` |	`Dashboard` |
+| `Sandra`| `1234` |	`Kassiererin` |	`Kasse` |
+| `Thomas`| `1234` |	`Lagerist` |	`Lager` |
 
+
+### Backend Connection
+
+The application now connects to a backend server and no longer uses dummy data for user authentication or document generation.
+
+- Login: Login credentials are now verified against the database on the backend server.
+- Orders & Invoices: The creation of delivery notes, invoices, and receipts is handled via API calls to the backend, which then returns the generated documents in HTML format.
+
+
+    ### Example: 
+    The "Preview" function for a delivery note sends order data to:
+
+              http://localhost:3000/api/wareHouse/order to generate a document.
 
 
 ### Important Notes
