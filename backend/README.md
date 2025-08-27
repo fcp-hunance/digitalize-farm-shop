@@ -1,77 +1,91 @@
-# Backend - Digitalize Farm Shop
+# 🌱 Digitalize Farm Shop - Backend API
 
-This folder contains the Express.js backend API server for the Digitalize Farm Shop.
+Dieses Repository enthält den **Express.js Backend-Server** für den Digitalize Farm Shop.  
+Es stellt REST-APIs für Kasse, Lager, Benutzerverwaltung, Rechnungen, Quittungen und Admin-Funktionen bereit.
 
-## Requirements
+---
 
-- Node.js (v16+ recommended)
-- npm or yarn
-- Access to MariaDB server (credentials configured via `.env`)
+## 📦 Anforderungen
 
-## Backend Setup
-1. Go to the backend folder:
+- **Node.js** (v16+ empfohlen)
+- **npm** oder **yarn**
+- **MariaDB** (Zugangsdaten via `.env` konfigurierbar)
+
+---
+
+## ⚙️ Setup
+
+1. Zum Backend-Ordner wechseln:
 ```bash
-cd backend
+   cd backend
+Abhängigkeiten installieren:
 ```
-2. Install dependencies:
 ```bash
+Code kopieren
 npm install
+Umgebungsvariablen konfigurieren:
 ```
-3. Configure environment variables:   
-Copy .env.example to .env and edit values for DB connection, port, etc.
 ```bash
+Code kopieren
 cp .env.example .env
+Trage anschließend DB-Credentials, Port, JWT-Secret etc. ein.
 ```
-4. Run migrations (if applicable):   
+Datenbank einrichten:
+
 ```bash
+
 mysql -u user -p digitalize_farm_shop < db/schema.sql
 mysql -u user -p digitalize_farm_shop < db/seeds/initData.sql
 mysql -u user -p digitalize_farm_shop < db/migrations/.
 ```
-## Running the server
-Development mode (with hot reload via nodemon):
+▶️ Server starten
+Entwicklung (mit Hot-Reload via nodemon):
+
 ```bash
+Code kopieren
 npm run dev
 ```
-Production mode:
+Produktion:
+
 ```bash
+Code kopieren
 npm start
 ```
-## 📁 Project Structure
+Standard-URL:
+
+
+http://localhost:3000
+📁 Projektstruktur
+```bash
+
+backend/
+├── controllers/   # Business-Logik
+├── models/        # Datenbankabfragen
+├── routes/        # Express Routen
+├── tools/         # Hilfsfunktionen (z.B. Hashing)
+├── db.js          # MariaDB Verbindung
+├── index.js       # Hauptserver
+├── .env           # Umgebungsvariablen
+└── README.md      # Projektdokumentation
 ```
-kassensystem-backend/
-├── controllers/ # Controller logic for routes
-├── models/ # Database queries
-├── routes/ # Express routes
-├── tools/ # Utility functions (e.g., hashing)
-├── db.js # MariaDB database connection
-├── index.js # Main server file
-├── .env # Environment variables
-└── README.md # Project documentation
-```
----
+🌐 API Übersicht
+Route	Beschreibung
+/api/auth	Benutzer-Registrierung, Login, Auth
+/api/cashDesk	Verkauf, Artikel, Tickets
+/api/warehouse	Lagerverwaltung, Bestellungen, Wareneingang
+/api/dashboard	Reporting, Produkte & Benutzerverwaltung
+/api/invoice	Rechnungen (PDF & HTML)
+/api/receipt	Quittungen (PDF & HTML)
+/api/admin	Admin-Tools: User-Management
 
-## API Overview
-- /api/auth - Mange Users Register, Login and Authentication
-- /api/cashDeck - Manage sales, items, tickets
-- /api/warehouse - Inventory management, invoices
-- /api/warehouse/order - Put an order and generate the Delivery Note
-- /api/dashboard - Reporting and analytics, Produts and Users management
-- /api/invoice - Generate the invoice (PDF and preview as HTML)
-- /api/receipt - Generate the Receipt (PDF and preview as HTML)
-(Expand with detailed endpoints as you implement)
-    
-### 1. Create a User
+🔑 Authentifizierung
+1. Benutzer anlegen
+POST /api/auth/register
 
-First, the admin needs to create a user using the dashboard.  
-This can be done via the following route:
-
-POST http://localhost:3000/api/auth/register
-
-
-**Request body example:**
+Beispiel-Request:
 
 ```json
+
 {
   "username": "marten",
   "password": "meinPasswort123",
@@ -79,167 +93,67 @@ POST http://localhost:3000/api/auth/register
   "role": "Admin"
 }
 ```
-The password will be hashed and stored in the database along with a unique ID and the username.
-The user data is saved in a table called t_user. (This table name can be changed later if needed.)
+2. Login
+POST /api/auth/login
 
+Request:
 
-### 2. Login
-Once a user has been created, they can log in using:
-
-POST http://localhost:3000/api/auth/login
-
-Request Body: 
 ```json
+
 {
   "username": "marten",
   "password": "meinPasswort123"
 }
-```
 
-If the credentials are correct, the server will respond with:
+```
+Response (inkl. Token):
+
 ```json
+
 {
-  "message": "Erfolgreich angemeldet",
-  "user": {
-    "id": 1,
-    "username": "marten"
-  }
+  "message": "Login successful",
+  "token": "jwt-token-hier",
+  "user": "marten",
+  "role": "Admin"
 }
-
 ```
-TODO in this response will be also created a Token for authentication.
-// Generate a JWT token for authentication, here a Password is needed (Put JWT_SECRET variable in .env), userRole will be became from DB.
-```js
-  const token = jwt.sign(
-      { username, role: userRole },
-      JWT_SECRET,
-      { expiresIn: '10h' }
-  );
-```
-Then will be sended this token to the client.
-```
-res.status(200).json({ message: 'Login successful', token, user: username, role: userRole });
-```
-# Warehouse API Documentation
+📦 Warehouse API
+Base URL: http://localhost:3000/api/warehouse
 
-## Base URL
-`http://localhost:3000/api/warehouse`
+Get Product Stock
+GET /:artikel_id
 
-## Endpoints
-
-### 1. Get Product Stock
-**GET** `/:artikel_id`
-
-Retrieves the current stock level for a specific product.
-
-**Path Parameter:**
-- `artikel_id` (integer) - Product ID
-
-**Response:**
 ```json
+
 {
   "artikel_id": 1,
   "bestand": 120
 }
-``` 
-
-Error Responses:
-
-400 Bad Request - Invalid product ID
-
-```json
-{"error": "Ungültige Artikel-ID"}
 ```
-404 Not Found - Product not found
-
-```json
-{"error": "Artikel nicht gefunden"}
-```
-500 Internal Server Error - Server error
-
-```json
-{"error": "Interner Serverfehler"}
-```
-2. Update Product Stock
+Update Product Stock
 POST /update
 
-Updates the stock level for a product (increase or decrease).
-
-Request Body:
-
 ```json
+
 {
   "productID": 1,
   "menge": 10,
   "richtung": "eingang"
 }
-```
-Fields:
-
-productID (integer) - Product ID to update
-
-menge (integer) - Quantity to add/remove
-
-richtung (string) - Direction: "eingang" (incoming) or "ausgang" (outgoing)
-
-Success Response:
+Antwort:
 
 ```json
+
 {
   "message": "Stock updated successfully",
   "newStock": 130
 }
 ```
-Error Responses:
-
-400 Bad Request - Invalid parameters
-
-```json
-{"error": "Ungültige Richtung"}
-```
-400 Bad Request - Negative stock not allowed
+Bestellung & Lieferschein
+POST /order
 
 ```json
-{"error": "Stock cannot be negative"}
-```
-404 Not Found - Product not found
 
-```json
-{"error": "Artikel nicht gefunden"}
-```
-500 Internal Server Error - Server error
-
-```json
-{"error": "Interner Serverfehler"}
-```
-Example Usage
-Get stock:
-
-bash
-```bash
-curl http://localhost:3000/api/warehouse/1
-Update stock (add 10):
-```
-
-bash
-```bash
-curl -X POST http://localhost:3000/api/warehouse/update \
-  -H "Content-Type: application/json" \
-  -d '{"productID": 1, "menge": 10, "richtung": "eingang"}'
-Update stock (remove 5):
-```
-bash
-```bash
-curl -X POST http://localhost:3000/api/warehouse/update \
-  -H "Content-Type: application/json" \
-  -d '{"productID": 1, "menge": 5, "richtung": "ausgang"}'
-```
-
-### Order and Delivery Note
-Create order:
-Request
-POST http://localhost:3000/api/wareHouse/order
-```json
 {
   "idCustomer": 1,
   "items": [
@@ -249,151 +163,77 @@ POST http://localhost:3000/api/wareHouse/order
   "decTotal": 30.5
 }
 ```
-Response
+Antwort:
+
 ```json
+
 {
-    "success": true,
-    "idOrder": 10,
-    "idDeliveryNote": 9
+  "success": true,
+  "idOrder": 10,
+  "idDeliveryNote": 9
 }
 ```
-Generate Delivery Note
-Here is neccessary the idOrder
-```
-POST http://localhost:3000/api/wareHouse/order/delivery.pdf
-POST http://localhost:3000/api/wareHouse/order/delivery.html
-```
-Request
+📑 Rechnungen & Quittungen
+Monatliche Rechnung erstellen
+POST /api/invoice/monthly.pdf
+
 ```json
-{
-  "idOrder": 1
-}
-```
-### 5. Generate Monthly Invoice
-This route create the invoice in PDF, or a preview in HTML:
-POST http://localhost:3000/api/invoice/monthly.pdf or http://localhost:3000/api/invoice/monthly.html
-In body the items list:
-```json
+
 {
   "customerId": 1,
   "month": "2025-08"
 }
 ```
-### 6 Create Receipt
-This route create the receipt in PDF, or a preview in HTML, and save the data in the DB:
-POST http://localhost:3000/api/receipt/receipt.pdf or http://localhost:3000/api/receipt/receipt.html
-In body the items list:
+Quittung erstellen
+POST /api/receipt/receipt.pdf
 
 ```json
+
 {
-    "idUser": 2,
-    "items": [
-        { "idProduct": 1, "quantity": 2 },
-        { "idProduct": 4, "quantity": 1 },
-        { "idProduct": 8, "quantity": 0.5 }
-    ],
-    "total": 20
+  "idUser": 2,
+  "items": [
+    { "idProduct": 1, "quantity": 2 },
+    { "idProduct": 4, "quantity": 1 }
+  ],
+  "total": 20
 }
 ```
+🛠️ Admin API
+Base URL: http://localhost:3000/api/admin
 
-# Admin API Documentation
+Passwort zurücksetzen
+POST /reset-password
 
-## Base URL
-`http://localhost:3000/api/admin`
-
-## Endpoints
-
-### POST `/admin/reset-password`
-Reset user password.
-
-**Request:**
 ```json
+
 {
   "username": "cashier1",
   "newPassword": "new_password_123"
 }
 ```
-
-Response:
-
-```json
-{
-  "success": true,
-  "message": "Password reset successfully",
-  "username": "cashier1"
-}
-```
-### POST /admin/reset-pin
-Reset user PIN.
-
-Request:
+PIN zurücksetzen
+POST /reset-pin
 
 ```json
+
 {
   "username": "cashier1",
   "newPin": "4321"
 }
 ```
-Response:
+Benutzer löschen
+DELETE /delete-user
 
 ```json
-{
-  "success": true,
-  "message": "PIN reset successfully",
-  "username": "cashier1"
-}
-```
-Error Responses
-400 Bad Request
-```json
-{
-  "error": "Username and new password required"
-}
-```
-403 Forbidden
-```json
-{
-  "error": "Access denied"
-}
-```
-404 Not Found
-```json
-{
-  "error": "User not found"
-}
-```
-500 Internal Server Error
-```json
-{
-  "error": "Internal server error"
-}
-```
 
-### DELETE `/admin/delete-user`
-Delete user by username.
-
-**Request:**
-```json
 {
   "username": "user_to_delete"
 }
 ```
-Response:
+🧪 Testing
+Tests können mit Postman oder einem vergleichbaren Tool durchgeführt werden.
 
-```json
-{
-  "success": true,
-  "message": "User deleted successfully",
-  "username": "user_to_delete"
-}
-```
+Beispiel-Requests siehe API-Abschnitte oben.
 
-
-## Notes
-
-## Testing
-    Add testing instructions here (if tests are implemented for exampled with POSTMAN).
-## License   
+📜 Lizenz
 MIT License
-
-
