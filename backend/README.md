@@ -140,6 +140,8 @@ POST /update
   "menge": 10,
   "richtung": "eingang"
 }
+```
+
 Antwort:
 
 ```json
