@@ -17,16 +17,15 @@ Es stellt REST-APIs für Kasse, Lager, Benutzerverwaltung, Rechnungen, Quittunge
 
 1. Zum Backend-Ordner wechseln:
 ```bash
-   cd backend
+cd backend
 Abhängigkeiten installieren:
 ```
 ```bash
-Code kopieren
+
 npm install
 Umgebungsvariablen konfigurieren:
 ```
 ```bash
-Code kopieren
 cp .env.example .env
 Trage anschließend DB-Credentials, Port, JWT-Secret etc. ein.
 ```
@@ -42,13 +41,11 @@ mysql -u user -p digitalize_farm_shop < db/migrations/.
 Entwicklung (mit Hot-Reload via nodemon):
 
 ```bash
-Code kopieren
 npm run dev
 ```
 Produktion:
 
 ```bash
-Code kopieren
 npm start
 ```
 Standard-URL:
